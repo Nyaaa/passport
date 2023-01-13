@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "passport"
+version = "0.1.0"
+description = "Packing list management tool"
+authors = ["Nyaaa <1457047+Nyaaa@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.1.5"
+python-dotenv = "^0.21.0"
+django-cities-light = "^3.9.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
