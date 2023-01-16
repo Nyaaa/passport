@@ -1,0 +1,24 @@
+{% extends 'default.html' %}
+{% load render_table from django_tables2 %}
+{% load export_url from django_tables2 %}
+{% load bootstrap5 %}
+
+{% block title %}Items{% endblock title %}
+
+{% block content %}
+{% if filter %}
+<div class="input-group">
+  <form action="" method="get" class="form form-inline">
+    {% bootstrap_form filter.form layout='inline' %}
+    {% bootstrap_button 'filter' %}
+  </form>
+</div>
+{% endif %}
+
+{% render_table table %}
+
+<div>
+  <p>Total items: {{ object_list|length }}</p>
+  <a href="{% export_url 'xls' %}">download  XLSX</a>
+</div>
+{% endblock content %}
