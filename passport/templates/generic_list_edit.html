@@ -1,0 +1,25 @@
+{% extends 'default.html' %}
+{% load bootstrap5 %}
+
+{% block title %}Edit{% endblock title %}
+
+{% block content %}
+{% bootstrap_messages %}
+
+<table class="table table-striped">
+  <tbody>
+  {% for item in objects %}
+    <tr>
+      <td>{{ item.name }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<form action="" method="post" class="form">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  {% bootstrap_button button_type="submit" content="OK" %}
+  <a href="{{request.META.HTTP_REFERER|escape}}" class="btn btn-default">Cancel</a>
+</form>
+{% endblock content %}

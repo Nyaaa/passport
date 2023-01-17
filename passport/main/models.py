@@ -18,7 +18,7 @@ class SetItem(models.Model):
 
 
 class Series(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
 
 class Set(models.Model):

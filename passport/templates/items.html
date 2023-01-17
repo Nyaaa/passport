@@ -7,18 +7,24 @@
 
 {% block content %}
 {% if filter %}
-<div class="input-group">
-  <form action="" method="get" class="form form-inline">
-    {% bootstrap_form filter.form layout='inline' %}
-    {% bootstrap_button 'filter' %}
+
+  <form class="row row-cols-lg-auto g-3 align-items-end justify-content-center" action="" method="get" >
+    <div class="input-group">
+      <span class="input-group-text" id="basic-addon1">Items: {{ object_list|length }}</span>
+      {% bootstrap_form filter.form layout='inline' %}
+      {% bootstrap_button content='Filter' %}
+      {% if filter.is_bound %}
+        <a href="{% url 'items' %}" class="btn btn-secondary">Clear filters</a>
+      {% endif %}
+      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Export</button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="{% export_url 'xls' %}">XLS</a></li>
+          <li><a class="dropdown-item" href="{% export_url 'xlsx' %}">XLSX</a></li>
+        </ul>
+      </div>
   </form>
-</div>
 {% endif %}
 
 {% render_table table %}
 
-<div>
-  <p>Total items: {{ object_list|length }}</p>
-  <a href="{% export_url 'xls' %}">download  XLSX</a>
-</div>
 {% endblock content %}
