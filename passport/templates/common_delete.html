@@ -1,0 +1,16 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Delete item
+{% endblock title %}
+
+{% block content %}
+<h1 class="text-center">Delete item?</h1>
+<hr>
+<form class="text-center" action="" method="post">
+  {% csrf_token %}
+  <p>Do you really want to delete "{{ object.name }}"?</p>
+  <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+<br>
+{% endblock content %}

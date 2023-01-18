@@ -5,17 +5,7 @@
 
 {% block content %}
 {% bootstrap_messages %}
-
-<table class="table table-striped">
-  <tbody>
-  {% for item in objects %}
-    <tr>
-      <td>{{ item.name }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-
+{{ form.media }}
 <form action="" method="post" class="form">
   {% csrf_token %}
   {% bootstrap_form form %}

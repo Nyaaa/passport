@@ -29,36 +29,31 @@
           </a>
         </li>
         <li>
-          <a href="{% url 'items' %}" class="{% if 'items' in request.path %}active{% endif %} nav-link py-3 border-bottom" title="Dashboard" data-bs-toggle="tooltip" data-bs-placement="right">
-            <svg class="bi" width="24" height="24" role="img" aria-label="Dashboard"><use xlink:href="{% static 'img/icons.svg' %}#speedometer2"/></svg>
+          <a href="{% url 'item' %}" class="{% if 'item' in request.path %}active{% endif %} nav-link py-3 border-bottom" title="Items" data-bs-toggle="tooltip" data-bs-placement="right">
+            <svg class="bi" width="24" height="24" role="img" aria-label="Items"><use xlink:href="{% static 'img/icons.svg' %}#tools"/></svg>
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link py-3 border-bottom" title="Orders" data-bs-toggle="tooltip" data-bs-placement="right">
-            <svg class="bi" width="24" height="24" role="img" aria-label="Orders"><use xlink:href="{% static 'img/icons.svg' %}#table"/></svg>
+          <a href="{% url 'sets' %}" class="{% if 'set' in request.path %}active{% endif %} nav-link py-3 border-bottom" title="Sets" data-bs-toggle="tooltip" data-bs-placement="right">
+            <svg class="bi" width="24" height="24" role="img" aria-label="Sets"><use xlink:href="{% static 'img/icons.svg' %}#table"/></svg>
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link py-3 border-bottom" title="Products" data-bs-toggle="tooltip" data-bs-placement="right">
-            <svg class="bi" width="24" height="24" role="img" aria-label="Products"><use xlink:href="{% static 'img/icons.svg' %}#grid"/></svg>
-          </a>
-        </li>
-        <li>
-          <a href="#" class="nav-link py-3 border-bottom" title="Customers" data-bs-toggle="tooltip" data-bs-placement="right">
-            <svg class="bi" width="24" height="24" role="img" aria-label="Customers"><use xlink:href="{% static 'img/icons.svg' %}#people-circle"/></svg>
+          <a href="#" class="{% if 'order' in request.path %}active{% endif %} nav-link py-3 border-bottom" title="Orders" data-bs-toggle="tooltip" data-bs-placement="right">
+            <svg class="bi" width="24" height="24" role="img" aria-label="Orders"><use xlink:href="{% static 'img/icons.svg' %}#grid"/></svg>
           </a>
         </li>
       </ul>
       <div class="dropdown border-top">
-        <a href="#" class="d-flex align-items-center justify-content-center p-3 link-dark text-decoration-none dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24" class="rounded-circle">
+        <a href="#" class="nav-link py-3 border-bottom dropdown-toggle" id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
+          <svg class="bi" width="24" height="24" role="img" aria-label="Customers"><use xlink:href="{% static 'img/icons.svg' %}#people-circle"/></svg>
         </a>
         <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser3">
           <li><a class="dropdown-item" href="#">New project...</a></li>
           <li><a class="dropdown-item" href="#">Settings</a></li>
           <li><a class="dropdown-item" href="#">Profile</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Sign out</a></li>
+          <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
         </ul>
       </div>
     </div>

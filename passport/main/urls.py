@@ -1,9 +1,24 @@
 from django.urls import path
-from .views import ItemListView, HomeView, ItemUpdate, ListAndCreate
+from django.contrib.auth.views import LoginView, LogoutView
+from .views import ItemListView, HomeView, CommonUpdate, CommonListCreate, CommonDelete, SetListView, SetUpdateView
+from .models import Item, Series, Distributor, Recipient
 
 urlpatterns = [
-   path('items/', ItemListView.as_view(), name='items'),
    path('', HomeView.as_view(), name='home'),
-   path('items/<str:pk>', ItemUpdate.as_view(), name='item_edit'),
-   path('series/', ListAndCreate.as_view(), name='series'),
+   path('login/', LoginView.as_view(template_name='login.html'), name='login'),
+   path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
+   path('item/', ItemListView.as_view(), name='item'),
+   path('item/<str:pk>', CommonUpdate.as_view(model=Item), name='item_edit'),
+   path('item/<str:pk>/delete', CommonDelete.as_view(model=Item), name='item_delete'),
+   path('series/', CommonListCreate.as_view(model=Series), name='series'),
+   path('series/<int:pk>', CommonUpdate.as_view(model=Series), name='series_edit'),
+   path('series/<int:pk>/delete', CommonDelete.as_view(model=Series), name='series_delete'),
+   path('distributor/', CommonListCreate.as_view(model=Distributor), name='distributor'),
+   path('distributor/<int:pk>', CommonUpdate.as_view(model=Distributor), name='distributor_edit'),
+   path('distributor/<int:pk>/delete', CommonDelete.as_view(model=Distributor), name='distributor_delete'),
+   path('recipient/', CommonListCreate.as_view(model=Recipient), name='recipient'),
+   path('recipient/<int:pk>', CommonUpdate.as_view(model=Recipient), name='recipient_edit'),
+   path('recipient/<int:pk>/delete', CommonDelete.as_view(model=Recipient), name='recipient_delete'),
+   path('sets/', SetListView.as_view(), name='sets'),
+   path('sets/<str:pk>', SetUpdateView.as_view(), name='set_edit'),
 ]

@@ -7,6 +7,9 @@ class Item(models.Model):
     article = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return f'{self.article}'
+
 
 class SetItem(models.Model):
     set = models.ForeignKey('Set', on_delete=models.CASCADE)
@@ -20,6 +23,9 @@ class SetItem(models.Model):
 class Series(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Set(models.Model):
     serial = models.CharField(max_length=50, primary_key=True)
@@ -30,11 +36,11 @@ class Set(models.Model):
 
 
 class Distributor(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
 
 class Recipient(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
 
 class OrderItem(models.Model):
@@ -47,6 +53,6 @@ class Order(models.Model):
     date = models.DateTimeField()
     distributor = models.ForeignKey(Distributor, on_delete=models.RESTRICT)
     recipient = models.ForeignKey(Recipient, on_delete=models.RESTRICT)
-    document = models.IntegerField()
+    document = models.IntegerField(blank=True, unique=True)
     city = models.ForeignKey(City, on_delete=models.RESTRICT)
     sets = models.ManyToManyField(Set, through=OrderItem)
