@@ -9,13 +9,13 @@
 {% bootstrap_messages %}
 
 {% if filter %}
-  <form class="row row-cols-lg-auto g-3 align-items-end justify-content-center" action="" method="get" >
+  <form class="" action="" method="get" >
     <div class="input-group">
       <span class="input-group-text" id="basic-addon1">Items: {{ object_list|length }}</span>
       {% bootstrap_form filter.form layout='inline' %}
       {% bootstrap_button content='Filter' %}
       {% if filter.is_bound %}
-        <a href="{% url request.resolver_match.view_name %}" class="btn btn-secondary">Clear filters</a>
+        <a href="{% url request.resolver_match.view_name %}" class="btn btn-outline-primary">Clear filters</a>
       {% endif %}
       <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Export</button>
         <ul class="dropdown-menu">
@@ -29,11 +29,14 @@
 {% render_table table %}
 
 {% if form %}
-  <form action="" method="post" class="form">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    {% bootstrap_button button_type="submit" content="OK" %}
-    <a href="{{request.META.HTTP_REFERER|escape}}" class="btn btn-default">Cancel</a>
+  <form action="" method="post" class="">
+    <div class="input-group">
+      <span class="input-group-text" id="">Create new {{ title.lower }}:</span>
+      {% csrf_token %}
+      {% bootstrap_form form layout='inline' %}
+      {% bootstrap_button button_type="submit" content="OK" %}
+      <a href="{{request.META.HTTP_REFERER|escape}}" class="btn btn-outline-primary">Cancel</a>
+    </div>
   </form>
 {% endif %}
 {% endblock content %}

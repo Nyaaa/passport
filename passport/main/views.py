@@ -10,16 +10,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views here.
-class ItemListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, CreateView, FilterView):
-    model = Item
-    ordering = 'article'
-    template_name = 'common_list_edit.html'
-    table_class = table_factory(Item, 'item')
-    filterset_class = ItemFilter
-    form_class = modelform_init(model=model, fields=('article', 'name'))
-    success_url = '/item/'
-
-
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'home.html'
 
@@ -72,3 +62,16 @@ class SetUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'set_edit.html'
     form_class = SetForm
     success_url = '/sets/'
+
+
+class ItemListView(CommonListCreate):
+    def __init__(self, *args, **kwargs):
+        super(CommonListCreate, self).__init__(*args, **kwargs)
+        self.model = Item
+        self.ordering = 'article'
+        self.template_name = 'common_list_edit.html'
+        self.table_class = table_factory(Item, 'item')
+        self.filterset_class = ItemFilter
+        self.form_class = modelform_init(model=self.model, fields=('article', 'name'))
+        self.success_url = '/item/'
+        self.object_list = self.model.objects.all()
