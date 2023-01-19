@@ -2,7 +2,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView, TemplateVie
 from .models import Item, Set
 from .tables import SetTable, table_factory
 from .filters import ItemFilter, SetFilter, filter_factory
-from .forms import SetForm, modelform_init
+from .forms import SetForm, modelform_init, ItemForm
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
@@ -72,6 +72,6 @@ class ItemListView(CommonListCreate):
         self.template_name = 'common_list_edit.html'
         self.table_class = table_factory(Item, 'item')
         self.filterset_class = ItemFilter
-        self.form_class = modelform_init(model=self.model, fields=('article', 'name'))
+        self.form_class = ItemForm
         self.success_url = '/item/'
         self.object_list = self.model.objects.all()

@@ -9,6 +9,7 @@
 {% bootstrap_messages %}
 
 {% if filter %}
+<!--FIXME: filter disappears if form is invalid-->
   <form class="" action="" method="get" >
     <div class="input-group">
       <span class="input-group-text" id="basic-addon1">Items: {{ object_list|length }}</span>
