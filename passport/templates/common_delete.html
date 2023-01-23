@@ -9,7 +9,7 @@ Delete item
 <hr>
 <form class="text-center" action="" method="post">
   {% csrf_token %}
-  <p>Do you really want to delete "{{ object.name }}"?</p>
+  <p>Do you really want to delete "{{ object }}"?</p>
   <button type="submit" class="btn btn-danger">Delete</button>
 </form>
 <br>

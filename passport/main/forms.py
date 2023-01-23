@@ -1,16 +1,17 @@
 from django import forms
 from django.forms import modelform_factory
-from .models import Item, Set
+from .models import Item, Set, Series
+from dal import autocomplete
 
 
-def modelform_init(model, fields=('name',)):
-    return modelform_factory(model, fields=fields)
+def modelform_init(model):
+    return modelform_factory(model, fields='__all__')
 
 
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['article', 'name']
+        fields = ['article', 'name', 'series']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -18,11 +19,19 @@ class ItemForm(forms.ModelForm):
         return cleaned_data
 
 
-
 class SetForm(forms.ModelForm):
-    set_article = forms.ModelChoiceField(queryset=Item.objects.all().order_by('article'))
-    items = forms.ModelMultipleChoiceField(queryset=Item.objects.all().order_by('article'), widget=forms.SelectMultiple)
+    class Meta:
+        model = Set
+        fields = ['serial', 'article', 'accounted', 'items']
+        widgets = {
+            'items': autocomplete.ModelSelect2Multiple(url='item-autocomplete'),
+            'article': autocomplete.ModelSelect2(url='item-autocomplete')
+        }
+
+
+class SetBasicForm(forms.ModelForm):
+    article = forms.ModelChoiceField(queryset=Item.objects.filter(is_set=True).order_by('article'))
 
     class Meta:
         model = Set
-        fields = ['serial', 'set_article', 'accounted', 'series', 'items']
+        fields = ['article']

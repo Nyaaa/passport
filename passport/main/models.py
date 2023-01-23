@@ -3,9 +3,18 @@ from cities_light.models import City
 
 
 # Create your models here.
+class Series(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return f'{self.name}'
+
+
 class Item(models.Model):
     article = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=255)
+    series = models.ForeignKey(Series, on_delete=models.RESTRICT, blank=True, null=True, default=None)
+    is_set = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.article}'
@@ -20,27 +29,25 @@ class SetItem(models.Model):
     comment = models.TextField(blank=True)
 
 
-class Series(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return f'{self.name}'
-
-
 class Set(models.Model):
     serial = models.CharField(max_length=50, primary_key=True)
-    set_article = models.ForeignKey(Item, related_name='%(class)s_article', on_delete=models.RESTRICT)
+    article = models.ForeignKey(Item, related_name='set_article', on_delete=models.RESTRICT)
     items = models.ManyToManyField(Item, through=SetItem)
     accounted = models.BooleanField(default=True)
-    series = models.ForeignKey(Series, on_delete=models.RESTRICT)
 
 
 class Distributor(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Recipient(models.Model):
     name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class OrderItem(models.Model):
