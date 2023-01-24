@@ -1,7 +1,8 @@
 from django import forms
 from django.forms import modelform_factory
-from .models import Item, Set, Series
+from .models import Item, Set, SetItem
 from dal import autocomplete
+from django.core.exceptions import ValidationError
 
 
 def modelform_init(model):
@@ -22,11 +23,21 @@ class ItemForm(forms.ModelForm):
 class SetForm(forms.ModelForm):
     class Meta:
         model = Set
-        fields = ['serial', 'article', 'accounted', 'items']
+        fields = ['serial', 'article', 'items', 'accounted']
         widgets = {
             'items': autocomplete.ModelSelect2Multiple(url='item-autocomplete'),
-            'article': autocomplete.ModelSelect2(url='item-autocomplete')
+            'article': autocomplete.ModelSelect2(url='item-autocomplete'),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        try:
+            int(cleaned_data.get('serial').rsplit('-')[1])
+        except ValueError:
+            raise ValidationError({
+                "serial": "serial must end with number"
+            })
+        return cleaned_data
 
 
 class SetBasicForm(forms.ModelForm):

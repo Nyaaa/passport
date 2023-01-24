@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from .views import ItemListView, HomeView, CommonUpdate, CommonListCreate, \
    CommonDelete, SetListView, SetUpdateView, ItemAutocomplete
-from .models import Item, Series, Distributor, Recipient
+from .models import Item, Series, Distributor, Recipient, Set
 
 urlpatterns = [
    path('', HomeView.as_view(), name='home'),
@@ -20,7 +20,8 @@ urlpatterns = [
    path('recipient/', CommonListCreate.as_view(model=Recipient), name='recipient'),
    path('recipient/<int:pk>', CommonUpdate.as_view(model=Recipient), name='recipient_edit'),
    path('recipient/<int:pk>/delete', CommonDelete.as_view(model=Recipient), name='recipient_delete'),
-   path('sets/', SetListView.as_view(), name='sets'),
-   path('sets/<str:pk>', SetUpdateView.as_view(), name='set_edit'),
+   path('set/', SetListView.as_view(), name='set'),
+   path('set/<str:pk>', SetUpdateView.as_view(), name='set_edit'),
+   path('set/<str:pk>/delete', CommonDelete.as_view(model=Set), name='set_delete'),
    path('item-autocomplete/', ItemAutocomplete.as_view(), name='item-autocomplete'),
 ]

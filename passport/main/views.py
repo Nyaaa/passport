@@ -1,5 +1,5 @@
-from django.views.generic import CreateView, UpdateView, DeleteView, TemplateView
-from .models import Item, Set
+from django.views.generic import CreateView, UpdateView, DeleteView, TemplateView, ListView, DetailView
+from .models import Item, Set, SetItem
 from .tables import SetTable, table_factory
 from .filters import ItemFilter, SetFilter, filter_factory
 from .forms import SetForm, SetBasicForm, modelform_init, ItemForm
@@ -60,19 +60,41 @@ class SetListView(CommonListCreate):
         self.form_class = SetBasicForm
         self.filterset_class = SetFilter
 
+    def form_valid(self, form):
+        _set = form.save(commit=False)
+        prev = Set.objects.filter(article=_set.article).order_by('pk').last()
+        if prev:
+            # setting serial number
+            prev_serial = int(prev.pk.split('-')[1])
+            next_serial = f"{_set.article}-{(prev_serial + 1):04d}"
+        else:
+            next_serial = f"{_set.article}-{1:04d}"
+        _set.serial = next_serial
+
+        # copying m2m items
+        prev_items = list(SetItem.objects.filter(set=prev.pk))
+        if prev_items:
+            _set.save()
+            copy_items = [SetItem(set=_set, item=item.item, amount=item.amount, extra=item.extra,
+                                  accounted=item.accounted) for item in prev_items]
+            SetItem.objects.bulk_create(copy_items)
+
+        response = super().form_valid(form)
+        return response
+
 
 class SetUpdateView(LoginRequiredMixin, UpdateView):
     model = Set
     template_name = 'set_edit.html'
     form_class = SetForm
-    success_url = '/sets/'
+    success_url = '/set/'
 
 
 class SetCreateView(LoginRequiredMixin, CreateView):
     model = Set
     template_name = 'set_edit.html'
     form_class = SetForm
-    success_url = '/sets/'
+    success_url = '/set/'
 
 
 class ItemListView(CommonListCreate):
