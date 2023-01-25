@@ -1,0 +1,47 @@
+{% extends 'default.html' %}
+{% load bootstrap5 %}
+{% load custom_filters %}
+
+{% block title %}{% endblock title %}
+
+{% block content %}
+
+<div>
+  <p>Set: {{ set.article }}</p>
+  <p>S/N: {{ set.serial }}</p>
+
+
+  {% for tray in set_items %}
+  <table class="table table-striped table-sm caption-top">
+    {% if tray == 0 %}
+      <caption>Optional tools</caption>
+    {% else %}
+      <caption>Tray №{{ tray }}</caption>
+    {% endif %}
+    <thead>
+      <th>№</th>
+      <th>Article</th>
+      <th>Name</th>
+      <th>Amount</th>
+    </thead>
+    {% for setitem in set_items|get_values:tray %}
+    <tr>
+      <td>
+        {{ forloop.counter }}
+      </td>
+      <td>
+        {{ setitem.item }}
+      </td>
+      <td>
+        {{ setitem.item.name }}
+      </td>
+      <td>
+        {{ setitem.amount }} pcs
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endfor %}
+</div>
+
+{% endblock content %}

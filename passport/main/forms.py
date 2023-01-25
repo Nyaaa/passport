@@ -22,7 +22,7 @@ class ItemForm(forms.ModelForm):
 class SetForm(forms.ModelForm):
     class Meta:
         model = Set
-        fields = ['serial', 'article', 'accounted']
+        fields = ['serial', 'article', 'comment']
         widgets = {
             'article': autocomplete.ModelSelect2(url='item-autocomplete'),
         }

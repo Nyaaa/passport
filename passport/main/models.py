@@ -24,16 +24,15 @@ class SetItem(models.Model):
     set = models.ForeignKey('Set', on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     amount = models.IntegerField(default=1)
-    extra = models.BooleanField(default=False)
-    accounted = models.BooleanField(default=True)
-    comment = models.TextField(blank=True)
+    tray = models.IntegerField(default=1)
+    comment = models.TextField(blank=True, null=True)
 
 
 class Set(models.Model):
     serial = models.CharField(max_length=50, primary_key=True)
     article = models.ForeignKey(Item, related_name='set_article', on_delete=models.RESTRICT)
     items = models.ManyToManyField(Item, through=SetItem)
-    accounted = models.BooleanField(default=True)
+    comment = models.TextField(blank=True, null=True)
 
 
 class Distributor(models.Model):

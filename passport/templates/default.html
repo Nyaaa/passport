@@ -17,7 +17,7 @@
 <main>
 <div class="container-fluid p-0 h-100">
   <div class="d-flex flex-row h-100">
-    <div class="d-flex flex-column flex-shrink-0 bg-light" style="width: 4.5rem;">
+    <div class="d-flex flex-column flex-shrink-0 bg-light d-print-none" style="width: 4.5rem;">
       <a href="/" class="d-block p-3 link-dark text-decoration-none" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
         <svg class="bi" width="40" height="32"><use xlink:href="{% static 'img/icons.svg' %}#bootstrap"/></svg>
         <span class="visually-hidden">Icon-only</span>
@@ -58,7 +58,8 @@
       </div>
     </div>
 
-    <div class="b-example-divider"></div>
+    <div class="b-example-divider d-print-none"></div>
+<!--    FIXME: scrolling and printing -->
     <div class="col overflow-auto p-4">
         {% block content %}
         {% endblock content %}
