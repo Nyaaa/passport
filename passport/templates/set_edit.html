@@ -18,6 +18,35 @@
   </form>
 </div>
 
+<div>
+  <form  id="form_set" method="POST">
+    {{ formset.management_form }}
+    {{ formset.media }}
+    {% csrf_token %}
+    <table class="table">
+      <thead>
+        {% for field in formset.forms.0 %}
+        {% if field.label and not field.is_hidden %}
+        <th>
+          {{ field.label }}
+        </th>
+        {% endif %}
+        {% endfor %}
+      </thead>
+      {% for form in formset.forms %}
+      <tr>
+        {% for field in form %}
+        <td>
+          {{ field }}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+    <button type="submit">Save</button>
+  </form>
+</div>
+
 <script>
 (function($) {
     $('#add-form').click(function() {
@@ -38,4 +67,5 @@
     })
 })($)
 </script>
+
 {% endblock content %}

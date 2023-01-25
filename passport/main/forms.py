@@ -1,12 +1,11 @@
 from django import forms
-from django.forms import modelform_factory
-from .models import Item, Set, SetItem
+from .models import Item, Set
 from dal import autocomplete
 from django.core.exceptions import ValidationError
 
 
 def modelform_init(model):
-    return modelform_factory(model, fields='__all__')
+    return forms.modelform_factory(model, fields='__all__')
 
 
 class ItemForm(forms.ModelForm):
@@ -23,9 +22,8 @@ class ItemForm(forms.ModelForm):
 class SetForm(forms.ModelForm):
     class Meta:
         model = Set
-        fields = ['serial', 'article', 'items', 'accounted']
+        fields = ['serial', 'article', 'accounted']
         widgets = {
-            'items': autocomplete.ModelSelect2Multiple(url='item-autocomplete'),
             'article': autocomplete.ModelSelect2(url='item-autocomplete'),
         }
 

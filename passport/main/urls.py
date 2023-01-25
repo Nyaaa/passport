@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from .views import ItemListView, HomeView, CommonUpdate, CommonListCreate, \
-   CommonDelete, SetListView, SetUpdateView, ItemAutocomplete
+   CommonDelete, SetListView, SetUpdateView, ItemAutocomplete, set_items
 from .models import Item, Series, Distributor, Recipient, Set
 
 urlpatterns = [
@@ -21,7 +21,8 @@ urlpatterns = [
    path('recipient/<int:pk>', CommonUpdate.as_view(model=Recipient), name='recipient_edit'),
    path('recipient/<int:pk>/delete', CommonDelete.as_view(model=Recipient), name='recipient_delete'),
    path('set/', SetListView.as_view(), name='set'),
-   path('set/<str:pk>', SetUpdateView.as_view(), name='set_edit'),
+   path('set/<str:pk>/edit', set_items, name='set_edit'),
+   # path('set/<str:pk>/edit2', set_items, name='set_items'),
    path('set/<str:pk>/delete', CommonDelete.as_view(model=Set), name='set_delete'),
    path('item-autocomplete/', ItemAutocomplete.as_view(), name='item-autocomplete'),
 ]

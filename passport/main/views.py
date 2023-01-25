@@ -8,6 +8,8 @@ from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from dal import autocomplete
+from django.shortcuts import render
+from django import forms
 
 
 # Create your views here.
@@ -116,3 +118,22 @@ class ItemAutocomplete(autocomplete.Select2QuerySetView):
         if self.q:
             qs = qs.filter(article__istartswith=self.q)
         return qs
+
+
+def set_items(request, pk):
+    _set = Set.objects.get(serial=pk)
+    form = SetForm(instance=_set)
+    set_item_formset = forms.inlineformset_factory(Set,
+                                                   SetItem,
+                                                   fields=['item', 'amount', 'extra', 'comment'],
+                                                   widgets={'item': autocomplete.ModelSelect2(url='item-autocomplete'),
+                                                            'comment': forms.TextInput
+                                                            })
+
+    if request.method == 'POST':
+        formset = set_item_formset(request.POST, instance=_set)
+        if formset.is_valid():
+            formset.save()
+
+    formset = set_item_formset(instance=_set)
+    return render(request, 'set_edit.html', {'formset': formset, 'form': form})
