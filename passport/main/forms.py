@@ -1,5 +1,5 @@
 from django import forms
-from .models import Item, Set
+from .models import Item, Set, Order
 from dal import autocomplete
 from django.core.exceptions import ValidationError
 
@@ -44,3 +44,14 @@ class SetBasicForm(forms.ModelForm):
     class Meta:
         model = Set
         fields = ['article']
+
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['distributor', 'recipient', 'city', 'sets']
+        widgets = {
+            'city': autocomplete.ModelSelect2(url='city-autocomplete'),
+            'sets': autocomplete.ModelSelect2Multiple(url='set-autocomplete'),
+        }
+

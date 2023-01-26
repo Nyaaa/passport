@@ -1,0 +1,17 @@
+{% extends 'default.html' %}
+{% load bootstrap5 %}
+
+{% block title %}Edit{% endblock title %}
+
+{% block content %}
+{% bootstrap_messages %}
+
+{% for name, value in object.get_fields %}
+  {% if value %}
+  <div>
+    {{name}} : {{value}}
+  </div>
+  {% endif %}
+{% endfor %}
+
+{% endblock content %}

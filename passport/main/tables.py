@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from .models import Item, Set, Series
+from .models import Set, Order
 from django_tables2.utils import A
 
 
@@ -24,6 +24,19 @@ class SetTable(tables.Table):
 
     class Meta:
         model = Set
+        template_name = "django_tables2/bootstrap5.html"
+        attrs = {"class": "table table-striped "}
+        sequence = ('...', 'view', 'edit', 'delete')
+
+
+class OrderTable(tables.Table):
+    view = tables.LinkColumn('order_detail', args=[A('pk')], orderable=False, empty_values=(), text='View')
+    edit = tables.LinkColumn('order_edit', args=[A('pk')], orderable=False, empty_values=(), text='Edit')
+    delete = tables.LinkColumn(f'order_delete', args=[A('pk')], orderable=False, empty_values=(), text='Delete')
+    date = tables.DateTimeColumn(format='Y-m-d')
+
+    class Meta:
+        model = Order
         template_name = "django_tables2/bootstrap5.html"
         attrs = {"class": "table table-striped "}
         sequence = ('...', 'view', 'edit', 'delete')

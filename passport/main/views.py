@@ -1,8 +1,8 @@
 from django.views.generic import CreateView, UpdateView, DeleteView, TemplateView, DetailView
-from .models import Item, Set, SetItem
-from .tables import SetTable, table_factory
-from .filters import ItemFilter, SetFilter, filter_factory
-from .forms import SetForm, SetBasicForm, modelform_init, ItemForm
+from .models import Item, Set, SetItem, Order, City
+from .tables import SetTable, table_factory, OrderTable
+from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
+from .forms import SetForm, SetBasicForm, modelform_init, ItemForm, OrderForm
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
@@ -124,7 +124,23 @@ class ItemAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Item.objects.all()
         if self.q:
-            qs = qs.filter(article__istartswith=self.q)
+            qs = qs.filter(article__icontains=self.q)
+        return qs
+
+
+class CityAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = City.objects.all()
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+        return qs
+
+
+class SetAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Set.objects.all()
+        if self.q:
+            qs = qs.filter(serial__icontains=self.q)
         return qs
 
 
@@ -145,3 +161,25 @@ def set_items(request, pk):
 
     formset = set_item_formset(instance=_set)
     return render(request, 'set_edit.html', {'formset': formset, 'form': form})
+
+
+class OrderListView(CommonListCreate):
+    def __init__(self, *args, **kwargs):
+        super(CommonListCreate, self).__init__(*args, **kwargs)
+        self.model = Order
+        self.ordering = 'document'
+        self.template_name = 'order_list_create.html'
+        self.form_class = OrderForm
+        self.filterset_class = OrderFilter
+        self.table_class = OrderTable
+        self.success_url = '/order/'
+
+    def form_valid(self, form):
+        _order = form.save(commit=False)
+        response = super().form_valid(form)
+        return response
+
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'order_detail.html'

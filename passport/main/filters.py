@@ -1,5 +1,5 @@
 import django_filters
-from .models import Item, Set, Series
+from .models import Item, Set, Series, Order
 
 
 def filter_factory(_model):
@@ -31,3 +31,10 @@ class SetFilter(django_filters.FilterSet):
     class Meta:
         model = Set
         fields = ['article', 'serial']
+
+
+class OrderFilter(django_filters.FilterSet):
+
+    class Meta:
+        model = Order
+        fields = ['date', 'distributor', 'recipient', 'document', 'city']

@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cities_light',
     'main',
     'django_tables2',
     'django_filters',
@@ -138,6 +137,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
-CITIES_LIGHT_TRANSLATION_LANGUAGES = []  # TODO: fill in
-CITIES_LIGHT_INCLUDE_COUNTRIES = []
-CITIES_LIGHT_INCLUDE_CITY_TYPES = ['PPL', 'PPLA', 'PPLA2', 'PPLC']
+
+DATETIME_FORMAT = 'Y-m-d, H:i'
+SHORT_DATETIME_FORMAT = 'Y-m-d'

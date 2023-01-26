@@ -1,5 +1,4 @@
 from django.db import models
-from cities_light.models import City
 
 
 # Create your models here.
@@ -34,6 +33,9 @@ class Set(models.Model):
     items = models.ManyToManyField(Item, through=SetItem)
     comment = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f'{self.serial}'
+
 
 class Distributor(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -49,16 +51,20 @@ class Recipient(models.Model):
         return f'{self.name}'
 
 
-class OrderItem(models.Model):
-    order = models.ForeignKey('Order', on_delete=models.CASCADE)
-    set = models.ForeignKey(Set, on_delete=models.CASCADE)
-    amount = models.IntegerField(default=1)
+class City(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Order(models.Model):
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     distributor = models.ForeignKey(Distributor, on_delete=models.RESTRICT)
     recipient = models.ForeignKey(Recipient, on_delete=models.RESTRICT)
-    document = models.IntegerField(blank=True, unique=True)
+    document = models.IntegerField(blank=True, null=True, unique=True)
     city = models.ForeignKey(City, on_delete=models.RESTRICT)
-    sets = models.ManyToManyField(Set, through=OrderItem)
+    sets = models.ManyToManyField(Set)
+
+    def get_fields(self):
+        return [(field.name, getattr(self, field.name)) for field in self._meta.fields]
