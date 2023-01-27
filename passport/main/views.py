@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from dal import autocomplete
 from django.shortcuts import render
 from django import forms
+from django.urls import reverse_lazy
 from collections import defaultdict
 
 
@@ -24,7 +25,7 @@ class CommonUpdate(LoginRequiredMixin, UpdateView):
         text = self.model.__name__.lower()
         self.form_class = modelform_init(self.model)
         self.template_name = 'common_edit.html'
-        self.success_url = f'/{text}/'
+        self.success_url = reverse_lazy(f'{text}')
 
 
 class CommonDelete(LoginRequiredMixin, DeleteView):
@@ -32,7 +33,7 @@ class CommonDelete(LoginRequiredMixin, DeleteView):
         super(CommonDelete, self).__init__(*args, **kwargs)
         text = self.model.__name__.lower()
         self.template_name = 'common_delete.html'
-        self.success_url = f'/{text}/'
+        self.success_url = reverse_lazy(f'{text}')
 
 
 class CommonListCreate(LoginRequiredMixin, ExportMixin, SingleTableMixin, CreateView, FilterView):
@@ -42,7 +43,7 @@ class CommonListCreate(LoginRequiredMixin, ExportMixin, SingleTableMixin, Create
         self.template_name = "common_list_edit.html"
         self.table_class = table_factory(self.model, text)
         self.form_class = modelform_init(self.model)
-        self.success_url = f'/{text}/'
+        self.success_url = reverse_lazy(f'{text}')
         self.filterset_class = filter_factory(self.model)
         self.object_list = self.model.objects.all()
 
@@ -55,7 +56,6 @@ class CommonListCreate(LoginRequiredMixin, ExportMixin, SingleTableMixin, Create
 class SetListView(CommonListCreate):
     model = Set
     ordering = 'serial'
-    template_name = 'common_list_edit.html'
 
     def __init__(self, *args, **kwargs):
         super(SetListView, self).__init__(*args, **kwargs)
@@ -104,7 +104,7 @@ class SetCreateView(LoginRequiredMixin, CreateView):
     model = Set
     template_name = 'set_edit.html'
     form_class = SetForm
-    success_url = '/set/'
+    success_url = reverse_lazy('set')
 
 
 class ItemListView(CommonListCreate):
@@ -116,7 +116,7 @@ class ItemListView(CommonListCreate):
         self.table_class = table_factory(Item, 'item')
         self.filterset_class = ItemFilter
         self.form_class = ItemForm
-        self.success_url = '/item/'
+        self.success_url = reverse_lazy('item')
         self.object_list = self.model.objects.all()
 
 
@@ -125,14 +125,6 @@ class ItemAutocomplete(autocomplete.Select2QuerySetView):
         qs = Item.objects.all()
         if self.q:
             qs = qs.filter(article__icontains=self.q)
-        return qs
-
-
-class CityAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        qs = City.objects.all()
-        if self.q:
-            qs = qs.filter(name__icontains=self.q)
         return qs
 
 
@@ -172,7 +164,7 @@ class OrderListView(CommonListCreate):
         self.form_class = OrderForm
         self.filterset_class = OrderFilter
         self.table_class = OrderTable
-        self.success_url = '/order/'
+        self.success_url = reverse_lazy('order')
 
     def form_valid(self, form):
         _order = form.save(commit=False)
@@ -183,3 +175,17 @@ class OrderListView(CommonListCreate):
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
     template_name = 'order_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sets = self.get_object().sets.all()
+        sets_items = dict()
+        for i in sets:
+            _dict = defaultdict(list)
+            items = SetItem.objects.filter(set=i)
+            for j in items:
+                _dict[j.tray].append(j)
+            sets_items[i.serial] = _dict
+        context["full_list"] = sets_items
+
+        return context
