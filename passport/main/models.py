@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 
 
 # Create your models here.
@@ -36,6 +37,10 @@ class Set(models.Model):
     def __str__(self):
         return f'{self.serial}'
 
+    @cached_property
+    def assigned_to(self):
+        return Order.objects.filter(sets=self).order_by('date').last()
+
 
 class Distributor(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -65,6 +70,3 @@ class Order(models.Model):
     document = models.IntegerField(blank=True, null=True, unique=True)
     city = models.ForeignKey(City, on_delete=models.RESTRICT)
     sets = models.ManyToManyField(Set)
-
-    def get_fields(self):
-        return [(field.name, getattr(self, field.name)) for field in self._meta.fields]

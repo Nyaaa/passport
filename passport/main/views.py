@@ -2,14 +2,13 @@ from django.views.generic import CreateView, UpdateView, DeleteView, TemplateVie
 from .models import Item, Set, SetItem, Order, City
 from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
-from .forms import SetForm, SetBasicForm, modelform_init, ItemForm, OrderForm
+from .forms import SetForm, SetBasicForm, modelform_init, ItemForm, OrderForm, set_item_formset
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from dal import autocomplete
 from django.shortcuts import render
-from django import forms
 from django.urls import reverse_lazy
 from collections import defaultdict
 
@@ -49,7 +48,7 @@ class CommonListCreate(LoginRequiredMixin, ExportMixin, SingleTableMixin, Create
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = self.model.__name__
+        context['title'] = self.model.__name__
         return context
 
 
@@ -65,15 +64,16 @@ class SetListView(CommonListCreate):
 
     def form_valid(self, form):
         _set = form.save(commit=False)
-        prev = Set.objects.filter(article=_set.article).order_by('pk').last()
+        article = str(_set.article).replace('USED-', '')
+        prev = Set.objects.filter(article=article).order_by('pk').last()
         prev_items = None
         if prev:
             # setting serial number
             prev_serial = int(prev.pk.split('-')[1])
-            next_serial = f"{_set.article}-{(prev_serial + 1):04d}"
+            next_serial = f"{article}-{(prev_serial + 1):04d}"
             prev_items = list(SetItem.objects.filter(set=prev.pk))
         else:
-            next_serial = f"{_set.article}-{1:04d}"
+            next_serial = f"{article}-{1:04d}"
         _set.serial = next_serial
 
         # copying m2m items
@@ -93,10 +93,10 @@ class SetDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         _dict = defaultdict(list)
-        items = SetItem.objects.filter(set=self.get_object())
+        items = SetItem.objects.filter(set=self.get_object()).select_related('item')
         for i in items:
             _dict[i.tray].append(i)
-        context["set_items"] = _dict
+        context['set_items'] = _dict
         return context
 
 
@@ -136,23 +136,32 @@ class SetAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-def set_items(request, pk):
-    _set = Set.objects.get(serial=pk)
-    form = SetForm(instance=_set)
-    set_item_formset = forms.inlineformset_factory(Set,
-                                                   SetItem,
-                                                   fields=['item', 'amount', 'tray', 'comment'],
-                                                   widgets={'item': autocomplete.ModelSelect2(url='item-autocomplete'),
-                                                            'comment': forms.TextInput
-                                                            })
+class SetUpdateView(UpdateView):
+    model = Set
+    template_name = "set_edit.html"
+    form_class = SetForm
+    success_url = reverse_lazy('set')
 
-    if request.method == 'POST':
+    def get(self, request, *args, **kwargs):
+        _set = Set.objects.get(serial=self.get_object())
+        form = SetForm(instance=_set)
+        formset = set_item_formset(instance=_set)
+        return render(request, 'set_edit.html', {'formset': formset, 'form': form})
+
+    def post(self, request, *args, **kwargs):
+        _set = Set.objects.get(serial=self.get_object())
+        if request.POST.get('serial'):
+            form = SetForm(request.POST, instance=_set)
+            if form.is_valid():
+                form.save()
+
         formset = set_item_formset(request.POST, instance=_set)
         if formset.is_valid():
             formset.save()
 
-    formset = set_item_formset(instance=_set)
-    return render(request, 'set_edit.html', {'formset': formset, 'form': form})
+        form = SetForm(instance=_set)
+        formset = set_item_formset(instance=_set)
+        return render(request, 'set_edit.html', {'formset': formset, 'form': form})
 
 
 class OrderListView(CommonListCreate):
@@ -182,10 +191,10 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         sets_items = dict()
         for i in sets:
             _dict = defaultdict(list)
-            items = SetItem.objects.filter(set=i)
+            items = SetItem.objects.filter(set=i).select_related('item')
             for j in items:
                 _dict[j.tray].append(j)
             sets_items[i.serial] = _dict
-        context["full_list"] = sets_items
+        context['full_list'] = sets_items
 
         return context

@@ -1,7 +1,14 @@
 from django import forms
-from .models import Item, Set, Order
+from .models import Item, Set, Order, SetItem
 from dal import autocomplete
 from django.core.exceptions import ValidationError
+
+
+set_item_formset = forms.inlineformset_factory(Set, SetItem,
+                                               fields=['item', 'amount', 'tray', 'comment'],
+                                               widgets={'item': autocomplete.ModelSelect2(url='item-autocomplete'),
+                                                        'comment': forms.TextInput
+                                                        })
 
 
 def modelform_init(model):

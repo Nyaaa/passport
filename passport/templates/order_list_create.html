@@ -15,6 +15,7 @@
   <form class="" action="" method="get" >
     <div class="input-group">
       <span class="input-group-text" id="basic-addon1">Items: {{ object_list|length }}</span>
+      {{ filter.form.media }}
       {% bootstrap_form filter.form layout='inline' %}
       {% bootstrap_button content='Filter' %}
       {% if filter.is_bound %}

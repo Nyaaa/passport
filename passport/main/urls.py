@@ -14,7 +14,7 @@ urlpatterns = [
     path('item/<str:pk>/delete', CommonDelete.as_view(model=Item), name='item_delete'),
     path('set/', v.SetListView.as_view(), name='set'),
     path('set/<str:pk>', v.SetDetailView.as_view(), name='set_detail'),
-    path('set/<str:pk>/edit', v.set_items, name='set_edit'),
+    path('set/<str:pk>/edit', v.SetUpdateView.as_view(), name='set_edit'),
     path('set/<str:pk>/delete', CommonDelete.as_view(model=Set), name='set_delete'),
     path('order/', v.OrderListView.as_view(), name='order'),
     path('order/<int:pk>', v.OrderDetailView.as_view(), name='order_detail'),
