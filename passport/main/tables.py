@@ -1,8 +1,6 @@
 import django_tables2 as tables
 from .models import Set, Order
 from django_tables2.utils import A
-from django.db import models
-from django.db.models import ExpressionWrapper, F, Value, CharField
 
 
 def table_factory(_model, text: str):
