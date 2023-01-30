@@ -70,3 +70,4 @@ class Order(models.Model):
     document = models.IntegerField(blank=True, null=True, unique=True)
     city = models.ForeignKey(City, on_delete=models.RESTRICT)
     sets = models.ManyToManyField(Set)
+    comment = models.TextField(blank=True, null=True)

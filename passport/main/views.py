@@ -136,9 +136,9 @@ class SetAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
 
-class SetUpdateView(UpdateView):
+class SetUpdateView(LoginRequiredMixin, UpdateView):
     model = Set
-    template_name = "set_edit.html"
+    template_name = 'set_edit.html'
     form_class = SetForm
     success_url = reverse_lazy('set')
 
