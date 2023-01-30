@@ -1,15 +1,15 @@
 from .models import Set
 from django.db.models import Prefetch
-
+from django.db import connection
 
 from timeit import default_timer as timer
 from django.db import connection, reset_queries
+
 
 def django_query_analyze(func):
     """decorator to perform analysis on Django queries"""
 
     def wrapper(*args, **kwargs):
-
         avs = []
         query_counts = []
         for _ in range(20):
@@ -35,29 +35,43 @@ def django_query_analyze(func):
 @django_query_analyze
 def get_sets_and_orders():
     result = []
-    sets = Set.objects.all().prefetch_related("order_set")[:10]
-    for myset in sets:
-        order = myset.order_set.all().filter(sets=myset).order_by('date').last()
-        date = order.date if order else None
-        distributor = order.distributor if order else None
-        recipient = order.recipient if order else None
-        document = order.document if order else None
-        city = order.city if order else None
+    result = Set.objects.raw('''SELECT ms.serial, ms.comment, ms.article_id, mo.date, mo.document, mc.name, md.name, mr.name
+FROM main_set ms
+LEFT OUTER JOIN main_order_sets mos
+	ON ms.serial = mos.set_id
+LEFT OUTER JOIN main_order mo
+	ON mos.order_id = mo.id
+LEFT OUTER JOIN main_city mc
+	ON mo.city_id = mc.id
+LEFT OUTER JOIN main_distributor md
+	ON mo.distributor_id =md.id
+LEFT OUTER JOIN main_recipient mr
+	ON mo.recipient_id = mr.id''')
 
-        result.append(
-            {
-                "serial": myset.serial,
-                "article": myset.article,
-                "comment": myset.comment,
-                "date": date,
-                "distributor": distributor,
-                "recipient": recipient,
-                "document": document,
-                "city": city,
-            }
-        )
+    for p in result:
+        print(p)
     return result
+
 
 # selectors.get_sets_and_orders()
 # importlib.reload(selectors)
 
+@django_query_analyze
+def use_raw_query():
+    query = """SELECT ms.serial, ms.comment, ms.article_id, mo.date, mo.document, mc.name, md.name, mr.name
+FROM main_set ms
+LEFT OUTER JOIN main_order_sets mos
+    ON ms.serial = mos.set_id
+LEFT OUTER JOIN main_order mo
+    ON mos.order_id = mo.id
+LEFT OUTER JOIN main_city mc
+    ON mo.city_id = mc.id
+LEFT OUTER JOIN main_distributor md
+    ON mo.distributor_id =md.id
+LEFT OUTER JOIN main_recipient mr
+    ON mo.recipient_id = mr.id"""
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+    return rows
