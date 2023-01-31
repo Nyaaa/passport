@@ -1,4 +1,6 @@
 from django.views.generic import CreateView, UpdateView, DeleteView, TemplateView, DetailView
+
+import main.selectors
 from .models import Item, Set, SetItem, Order, City
 from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
@@ -61,6 +63,7 @@ class SetListView(CommonListCreate):
         self.form_class = SetBasicForm
         self.filterset_class = SetFilter
         self.table_class = SetTable
+        self.table_data = main.selectors.use_raw_query()
 
     def form_valid(self, form):
         _set = form.save(commit=False)
