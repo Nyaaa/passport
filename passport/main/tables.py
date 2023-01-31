@@ -40,7 +40,7 @@ class SetTable(tables.Table):
 class OrderTable(tables.Table):
     view = tables.LinkColumn('order_detail', args=[A('pk')], orderable=False, empty_values=(), text='View')
     edit = tables.LinkColumn('order_edit', args=[A('pk')], orderable=False, empty_values=(), text='Edit')
-    delete = tables.LinkColumn(f'order_delete', args=[A('pk')], orderable=False, empty_values=(), text='Delete')
+    delete = tables.LinkColumn('order_delete', args=[A('pk')], orderable=False, empty_values=(), text='Delete')
     date = tables.DateTimeColumn(format='Y-m-d')
     sets = tables.ManyToManyColumn()
 

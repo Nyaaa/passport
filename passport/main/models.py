@@ -39,7 +39,7 @@ class Set(models.Model):
 
     @cached_property
     def assigned_to(self):
-        return Order.objects.filter(sets=self).order_by('date').last()
+        return self.order_set.select_related().filter(sets=self).order_by('date').last()
 
 
 class Distributor(models.Model):
