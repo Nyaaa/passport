@@ -180,6 +180,13 @@ class OrderListView(CommonListCreate):
         response = super().form_valid(form)
         return response
 
+    def get_queryset(self):
+        """This fixes N+1 problem created the django-tables"""
+        qs = super().get_queryset()
+        qs = qs.select_related('distributor', 'recipient', 'city')
+        qs = qs.prefetch_related('sets')
+        return qs
+
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order

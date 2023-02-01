@@ -7,8 +7,10 @@ from django.db.models import ExpressionWrapper, F, Value, CharField
 
 def table_factory(_model, text: str):
     class Table(tables.Table):
-        edit = tables.LinkColumn(f'{text}_edit', args=[A('pk')], orderable=False, empty_values=(), text='Edit')
-        delete = tables.LinkColumn(f'{text}_delete', args=[A('pk')], orderable=False, empty_values=(), text='Delete')
+        edit = tables.LinkColumn(f'{text}_edit', args=[A('pk')], orderable=False,
+                                 empty_values=(), text='Edit', exclude_from_export=True)
+        delete = tables.LinkColumn(f'{text}_delete', args=[A('pk')], orderable=False,
+                                   empty_values=(), text='Delete', exclude_from_export=True)
 
         class Meta:
             model = _model
@@ -20,9 +22,12 @@ def table_factory(_model, text: str):
 
 
 class SetTable(tables.Table):
-    view = tables.LinkColumn('set_detail', args=[A('pk')], orderable=False, empty_values=(), text='View')
-    edit = tables.LinkColumn('set_edit', args=[A('pk')], orderable=False, empty_values=(), text='Edit')
-    delete = tables.LinkColumn(f'set_delete', args=[A('pk')], orderable=False, empty_values=(), text='Delete')
+    view = tables.LinkColumn('set_detail', args=[A('pk')], orderable=False,
+                             empty_values=(), text='View', exclude_from_export=True)
+    edit = tables.LinkColumn('set_edit', args=[A('pk')], orderable=False,
+                             empty_values=(), text='Edit', exclude_from_export=True)
+    delete = tables.LinkColumn(f'set_delete', args=[A('pk')], orderable=False,
+                               empty_values=(), text='Delete', exclude_from_export=True)
     # TODO: sorting
     assigned_to = tables.Column(accessor='assigned_to.distributor', orderable=False)
     date = tables.DateTimeColumn(accessor='assigned_to.date', format='Y-m-d', orderable=False)
@@ -38,9 +43,12 @@ class SetTable(tables.Table):
 
 
 class OrderTable(tables.Table):
-    view = tables.LinkColumn('order_detail', args=[A('pk')], orderable=False, empty_values=(), text='View')
-    edit = tables.LinkColumn('order_edit', args=[A('pk')], orderable=False, empty_values=(), text='Edit')
-    delete = tables.LinkColumn('order_delete', args=[A('pk')], orderable=False, empty_values=(), text='Delete')
+    view = tables.LinkColumn('order_detail', args=[A('pk')], orderable=False,
+                             empty_values=(), text='View', exclude_from_export=True)
+    edit = tables.LinkColumn('order_edit', args=[A('pk')], orderable=False,
+                             empty_values=(), text='Edit', exclude_from_export=True)
+    delete = tables.LinkColumn('order_delete', args=[A('pk')], orderable=False,
+                               empty_values=(), text='Delete', exclude_from_export=True)
     date = tables.DateTimeColumn(format='Y-m-d')
     sets = tables.ManyToManyColumn()
 
