@@ -26,9 +26,12 @@ generic_views = [Series, City, Distributor, Recipient]
 for model in generic_views:
     text = model.__name__.lower()
     urlpatterns += [
-        path(f'{text}/', CommonListCreate.as_view(model=model), name=f'{text}'),
-        path(f'{text}/<int:pk>', CommonUpdate.as_view(model=model), name=f'{text}_edit'),
-        path(f'{text}/<int:pk>/delete', CommonDelete.as_view(model=model), name=f'{text}_delete'),
+        path(f'{text}/', CommonListCreate.as_view(model=model,
+                                                  text=text), name=f'{text}'),
+        path(f'{text}/<int:pk>', CommonUpdate.as_view(model=model,
+                                                      text=text), name=f'{text}_edit'),
+        path(f'{text}/<int:pk>/delete', CommonDelete.as_view(model=model,
+                                                             text=text), name=f'{text}_delete'),
     ]
 
 urlpatterns += [

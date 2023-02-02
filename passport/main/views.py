@@ -19,32 +19,33 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class CommonUpdate(LoginRequiredMixin, UpdateView):
+    text = None
+    template_name = 'common_edit.html'
+
     def __init__(self, *args, **kwargs):
         super(CommonUpdate, self).__init__(*args, **kwargs)
-        text = self.model.__name__.lower()
         self.form_class = modelform_init(self.model)
-        self.template_name = 'common_edit.html'
-        self.success_url = reverse_lazy(f'{text}')
+        self.success_url = reverse_lazy(f'{self.text}')
 
 
 class CommonDelete(LoginRequiredMixin, DeleteView):
-    def __init__(self, *args, **kwargs):
-        super(CommonDelete, self).__init__(*args, **kwargs)
-        text = self.model.__name__.lower()
-        self.template_name = 'common_delete.html'
-        self.success_url = reverse_lazy(f'{text}')
+    text = None
+    template_name = 'common_delete.html'
+
+    def get_success_url(self, *args, **kwargs):
+        return reverse_lazy(self.text, args=[self.kwargs['slug']])
 
 
 class CommonListCreate(LoginRequiredMixin, ExportMixin, SingleTableMixin, CreateView, FilterView):
+    text = None
+    template_name = "common_list_edit.html"
+
     def __init__(self, *args, **kwargs):
         super(CommonListCreate, self).__init__(*args, **kwargs)
-        text = self.model.__name__.lower()
-        self.template_name = "common_list_edit.html"
-        self.table_class = table_factory(self.model, text)
+        self.table_class = table_factory(self.model, self.text)
         self.form_class = modelform_init(self.model)
-        self.success_url = reverse_lazy(f'{text}')
+        self.success_url = reverse_lazy(f'{self.text}')
         self.filterset_class = filter_factory(self.model)
-        self.object_list = self.model.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -108,16 +109,15 @@ class SetCreateView(LoginRequiredMixin, CreateView):
 
 
 class ItemListView(CommonListCreate):
+    ordering = 'article'
+
     def __init__(self, *args, **kwargs):
         super(CommonListCreate, self).__init__(*args, **kwargs)
         self.model = Item
-        self.ordering = 'article'
-        self.template_name = 'common_list_edit.html'
         self.table_class = table_factory(Item, 'item')
         self.filterset_class = ItemFilter
         self.form_class = ItemForm
         self.success_url = reverse_lazy('item')
-        self.object_list = self.model.objects.all()
 
 
 class ItemAutocomplete(autocomplete.Select2QuerySetView):
@@ -165,11 +165,11 @@ class SetUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class OrderListView(CommonListCreate):
+    template_name = 'order_list_create.html'
+
     def __init__(self, *args, **kwargs):
         super(CommonListCreate, self).__init__(*args, **kwargs)
         self.model = Order
-        self.ordering = 'document'
-        self.template_name = 'order_list_create.html'
         self.form_class = OrderForm
         self.filterset_class = OrderFilter
         self.table_class = OrderTable
@@ -181,10 +181,11 @@ class OrderListView(CommonListCreate):
         return response
 
     def get_queryset(self):
-        """This fixes N+1 problem created the django-tables"""
+        """This fixes N+1 problem created by django-tables"""
         qs = super().get_queryset()
         qs = qs.select_related('distributor', 'recipient', 'city')
         qs = qs.prefetch_related('sets')
+        qs = qs.order_by('-date')
         return qs
 
 
