@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand-lg d-print-none">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Passport</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if 'item' in request.path %}active{% endif %}" href="{% url 'item' %}">Items</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if 'set' in request.path %}active{% endif %}" href="{% url 'set' %}">Sets</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if 'order' in request.path %}active{% endif %}" href="{% url 'order' %}">Orders</a>
+        </li>
+      </ul>
+      <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}" role="button">Sigh out</a>
+    </div>
+  </div>
+</nav>

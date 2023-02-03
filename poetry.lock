@@ -11,7 +11,7 @@ tests = ["mypy (>=0.800)", "pytest", "pytest-asyncio"]
 
 [[package]]
 name = "beautifulsoup4"
-version = "4.11.1"
+version = "4.11.2"
 description = "Screen-scraping library"
 category = "main"
 optional = false
@@ -26,7 +26,7 @@ lxml = ["lxml"]
 
 [[package]]
 name = "django"
-version = "4.1.5"
+version = "4.1.6"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
@@ -157,7 +157,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "openpyxl"
-version = "3.0.10"
+version = "3.1.0"
 description = "A Python library to read/write Excel 2010 xlsx/xlsm files"
 category = "main"
 optional = false
@@ -191,7 +191,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "python-dotenv"
-version = "0.21.0"
+version = "0.21.1"
 description = "Read key-value pairs from a .env file and set them as environment variables"
 category = "main"
 optional = false
@@ -215,7 +215,7 @@ tests = ["flake8", "loguru", "pytest", "pytest-asyncio", "pytest-cov", "pytest-m
 
 [[package]]
 name = "pytz"
-version = "2022.7"
+version = "2022.7.1"
 description = "World timezone definitions, modern and historical"
 category = "main"
 optional = false
@@ -316,12 +316,12 @@ asgiref = [
     {file = "asgiref-3.6.0.tar.gz", hash = "sha256:9567dfe7bd8d3c8c892227827c41cce860b368104c3431da67a0c5a65a949506"},
 ]
 beautifulsoup4 = [
-    {file = "beautifulsoup4-4.11.1-py3-none-any.whl", hash = "sha256:58d5c3d29f5a36ffeb94f02f0d786cd53014cf9b3b3951d42e0080d8a9498d30"},
-    {file = "beautifulsoup4-4.11.1.tar.gz", hash = "sha256:ad9aa55b65ef2808eb405f46cf74df7fcb7044d5cbc26487f96eb2ef2e436693"},
+    {file = "beautifulsoup4-4.11.2-py3-none-any.whl", hash = "sha256:0e79446b10b3ecb499c1556f7e228a53e64a2bfcebd455f370d8927cb5b59e39"},
+    {file = "beautifulsoup4-4.11.2.tar.gz", hash = "sha256:bc4bdda6717de5a2987436fb8d72f45dc90dd856bdfd512a1314ce90349a0106"},
 ]
 django = [
-    {file = "Django-4.1.5-py3-none-any.whl", hash = "sha256:4b214a05fe4c99476e99e2445c8b978c8369c18d4dea8e22ec412862715ad763"},
-    {file = "Django-4.1.5.tar.gz", hash = "sha256:ff56ebd7ead0fd5dbe06fe157b0024a7aaea2e0593bb3785fb594cf94dad58ef"},
+    {file = "Django-4.1.6-py3-none-any.whl", hash = "sha256:c6fe7ebe7c017fe59f1029821dae0acb5a2ddcd6c9a0138fd20a8bfefac914bc"},
+    {file = "Django-4.1.6.tar.gz", hash = "sha256:bceb0fe1a386781af0788cae4108622756cd05e7775448deec04a71ddf87685d"},
 ]
 django-autocomplete-light = [
     {file = "django-autocomplete-light-3.9.4.tar.gz", hash = "sha256:0f6da75c1c7186698b867a467a8cdb359f0513fdd8e09288a0c2fb018ae3d94e"},
@@ -359,8 +359,8 @@ et-xmlfile = [
     {file = "et_xmlfile-1.1.0.tar.gz", hash = "sha256:8eb9e2bc2f8c97e37a2dc85a09ecdcdec9d8a396530a6d5a33b30b9a92da0c5c"},
 ]
 openpyxl = [
-    {file = "openpyxl-3.0.10-py2.py3-none-any.whl", hash = "sha256:0ab6d25d01799f97a9464630abacbb34aafecdcaa0ef3cba6d6b3499867d0355"},
-    {file = "openpyxl-3.0.10.tar.gz", hash = "sha256:e47805627aebcf860edb4edf7987b1309c1b3632f3750538ed962bbcc3bd7449"},
+    {file = "openpyxl-3.1.0-py2.py3-none-any.whl", hash = "sha256:24d7d361025d186ba91eff58135d50855cf035a84371b891e58fb6eb5125660f"},
+    {file = "openpyxl-3.1.0.tar.gz", hash = "sha256:eccedbe1cdd8b2494057e73959b496821141038dbb7eb9266ea59e3f34208231"},
 ]
 progressbar2 = [
     {file = "progressbar2-4.2.0-py2.py3-none-any.whl", hash = "sha256:1a8e201211f99a85df55f720b3b6da7fb5c8cdef56792c4547205be2de5ea606"},
@@ -382,16 +382,16 @@ psycopg2 = [
     {file = "psycopg2-2.9.5.tar.gz", hash = "sha256:a5246d2e683a972e2187a8714b5c2cf8156c064629f9a9b1a873c1730d9e245a"},
 ]
 python-dotenv = [
-    {file = "python-dotenv-0.21.0.tar.gz", hash = "sha256:b77d08274639e3d34145dfa6c7008e66df0f04b7be7a75fd0d5292c191d79045"},
-    {file = "python_dotenv-0.21.0-py3-none-any.whl", hash = "sha256:1684eb44636dd462b66c3ee016599815514527ad99965de77f43e0944634a7e5"},
+    {file = "python-dotenv-0.21.1.tar.gz", hash = "sha256:1c93de8f636cde3ce377292818d0e440b6e45a82f215c3744979151fa8151c49"},
+    {file = "python_dotenv-0.21.1-py3-none-any.whl", hash = "sha256:41e12e0318bebc859fcc4d97d4db8d20ad21721a6aa5047dd59f090391cb549a"},
 ]
 python-utils = [
     {file = "python-utils-3.4.5.tar.gz", hash = "sha256:7e329c427a6d23036cfcc4501638afb31b2ddc8896f25393562833874b8c6e0a"},
     {file = "python_utils-3.4.5-py2.py3-none-any.whl", hash = "sha256:22990259324eae88faa3389d302861a825dbdd217ab40e3ec701851b3337d592"},
 ]
 pytz = [
-    {file = "pytz-2022.7-py2.py3-none-any.whl", hash = "sha256:93007def75ae22f7cd991c84e02d434876818661f8df9ad5df9e950ff4e52cfd"},
-    {file = "pytz-2022.7.tar.gz", hash = "sha256:7ccfae7b4b2c067464a6733c6261673fdb8fd1be905460396b97a073e9fa683a"},
+    {file = "pytz-2022.7.1-py2.py3-none-any.whl", hash = "sha256:78f4f37d8198e0627c5f1143240bb0206b8691d8d7ac6d78fee88b78733f8c4a"},
+    {file = "pytz-2022.7.1.tar.gz", hash = "sha256:01a0681c4b9684a28304615eba55d1ab31ae00bf68ec157ec3708a8182dbbcd0"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

@@ -93,11 +93,13 @@ class SetDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['sets'] = [self.get_object()]
         _dict = defaultdict(list)
         items = SetItem.objects.filter(set=self.get_object()).select_related('item')
         for i in items:
             _dict[i.tray].append(i)
-        context['set_items'] = _dict
+        myd = {context['sets'][0].serial: _dict}
+        context['set_items'] = myd
         return context
 
 
@@ -191,18 +193,19 @@ class OrderListView(CommonListCreate):
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
-    template_name = 'order_detail.html'
+    template_name = 'set_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sets = self.get_object().sets.all()
+        context['sets'] = self.get_object().sets.all()
         sets_items = dict()
-        for i in sets:
+        for i in context['sets']:
             _dict = defaultdict(list)
             items = SetItem.objects.filter(set=i).select_related('item')
             for j in items:
                 _dict[j.tray].append(j)
             sets_items[i.serial] = _dict
-        context['full_list'] = sets_items
+        context['set_items'] = sets_items
+        print(sets_items)
 
         return context

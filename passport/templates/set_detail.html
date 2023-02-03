@@ -1,46 +1,60 @@
-{% extends 'default.html' %}
+{% extends 'base/default.html' %}
 {% load bootstrap5 %}
 {% load custom_filters %}
 
-{% block title %}{% endblock title %}
+{% block title %}Edit{% endblock title %}
 
 {% block content %}
-
+{% bootstrap_messages %}
+<!--TODO: add page breaks-->
 <div>
-  <p>Set: {{ set.article }}</p>
-  <p>S/N: {{ set.serial }}</p>
+  {% for set in sets %}
+  <hr>
+  <div>
+    <table class="table table-info table-striped" aria-describedby="Set info for {{ set.serial }}">
+      <thead>
+      <th>Set</th>
+      <th>S/N</th>
+      <th>Distributor</th>
+      <th>Recipient</th>
+      <th>City</th>
+      <th>Date</th>
+      </thead>
+      <tr>
+        <td>{{ set.article }}</td>
+        <td>{{ set.serial }}</td>
+        <td>{{ order.distributor }}</td>
+        <td>{{ order.recipient }}</td>
+        <td>{{ order.city }}</td>
+        <td>{{ order.date }}</td>
+      </tr>
+    </table>
 
 
-  {% for tray in set_items %}
-  <table class="table table-striped table-sm caption-top">
-    {% if tray == 0 %}
-      <caption>Optional tools</caption>
-    {% else %}
-      <caption>Tray №{{ tray }}</caption>
-    {% endif %}
-    <thead>
-      <th>№</th>
-      <th>Article</th>
-      <th>Name</th>
-      <th>Amount</th>
-    </thead>
-    {% for setitem in set_items|get_values:tray %}
-    <tr>
-      <td>
-        {{ forloop.counter }}
-      </td>
-      <td>
-        {{ setitem.item }}
-      </td>
-      <td>
-        {{ setitem.item.name }}
-      </td>
-      <td>
-        {{ setitem.amount }} pcs
-      </td>
-    </tr>
+    {% for tray in set_items|get_values:set.serial %}
+    <table class="table table-striped table-sm caption-top" aria-describedby="Set item list for {{ set.serial }}">
+      {% if tray == 0 %}
+        <caption>Optional tools</caption>
+      {% else %}
+        <caption>Tray №{{ tray }}</caption>
+      {% endif %}
+      <thead>
+        <th>№</th>
+        <th>Article</th>
+        <th>Name</th>
+        <th>Amount</th>
+      </thead>
+      {% for setitem in set_items|get_values:set.serial|get_values:tray %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ setitem.item }}</td>
+        <td>{{ setitem.item.name }}</td>
+        <td>{{ setitem.amount }} pcs</td>
+      </tr>
+      {% endfor %}
+    </table>
     {% endfor %}
-  </table>
+  </div>
   {% endfor %}
 </div>
 

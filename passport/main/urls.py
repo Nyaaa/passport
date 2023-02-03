@@ -7,8 +7,8 @@ from dal import autocomplete
 
 urlpatterns = [
     path('', v.HomeView.as_view(), name='home'),
-    path('login/', LoginView.as_view(template_name='login.html'), name='login'),
-    path('logout/', LogoutView.as_view(template_name='logout.html'), name='logout'),
+    path('login/', LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('item/', v.ItemListView.as_view(), name='item'),
     path('item/<str:pk>', CommonUpdate.as_view(model=Item), name='item_edit'),
     path('item/<str:pk>/delete', CommonDelete.as_view(model=Item), name='item_delete'),

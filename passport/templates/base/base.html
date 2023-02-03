@@ -1,0 +1,21 @@
+<!doctype html>
+<!--<html lang="en">-->
+<html lang="en" data-bs-theme="dark">
+{% load static %}
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>Passport - {% block title %}{% endblock title %}</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'font-awesome/css/fontawesome.min.css' %}" rel="stylesheet" >
+    <link href="{% static 'font-awesome/css/regular.min.css' %}" rel="stylesheet" >
+  </head>
+<body>
+{% block body %}
+{% block content %}
+{% endblock content %}
+{% endblock body %}
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
