@@ -1,13 +1,16 @@
 from django import forms
 from .models import Item, Set, Order, SetItem
-from dal import autocomplete
 from django.core.exceptions import ValidationError
+from ajax_select.fields import AutoCompleteSelectField, AutoCompleteSelectMultipleField, \
+    AutoCompleteWidget, AutoCompleteSelectWidget, AutoCompleteSelectMultipleWidget
 
 
 set_item_formset = forms.inlineformset_factory(Set, SetItem,
                                                fields=['item', 'amount', 'tray', 'comment'],
-                                               widgets={'item': autocomplete.ModelSelect2(url='item-autocomplete'),
-                                                        'comment': forms.TextInput
+                                               widgets={'item': AutoCompleteWidget('article', attrs={'class': 'form-control'}),
+                                                        'amount': forms.NumberInput(attrs={'class': 'form-control'}),
+                                                        'tray': forms.NumberInput(attrs={'class': 'form-control'}),
+                                                        'comment': forms.TextInput(attrs={'class': 'form-control'}),
                                                         })
 
 
@@ -31,7 +34,7 @@ class SetForm(forms.ModelForm):
         model = Set
         fields = ['serial', 'article', 'comment']
         widgets = {
-            'article': autocomplete.ModelSelect2(url='item-autocomplete'),
+            'article': AutoCompleteWidget('article'),
         }
 
     def clean(self):
@@ -58,7 +61,7 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['distributor', 'recipient', 'city', 'sets']
         widgets = {
-            'city': autocomplete.ModelSelect2(url='city-autocomplete'),
-            'sets': autocomplete.ModelSelect2Multiple(url='set-autocomplete'),
+            'city': AutoCompleteSelectWidget('city'),
+            'sets': AutoCompleteSelectMultipleWidget('set'),
         }
 

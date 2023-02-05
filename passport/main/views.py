@@ -7,7 +7,6 @@ from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from dal import autocomplete
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from collections import defaultdict
@@ -122,22 +121,6 @@ class ItemListView(CommonListCreate):
         self.success_url = reverse_lazy('item')
 
 
-class ItemAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        qs = Item.objects.all()
-        if self.q:
-            qs = qs.filter(article__icontains=self.q)
-        return qs
-
-
-class SetAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        qs = Set.objects.all()
-        if self.q:
-            qs = qs.filter(serial__icontains=self.q)
-        return qs
-
-
 class SetUpdateView(LoginRequiredMixin, UpdateView):
     model = Set
     template_name = 'set_edit.html'
@@ -176,6 +159,7 @@ class OrderListView(CommonListCreate):
         self.filterset_class = OrderFilter
         self.table_class = OrderTable
         self.success_url = reverse_lazy('order')
+        self.object_list = self.model.objects.all()
 
     def form_valid(self, form):
         _order = form.save(commit=False)

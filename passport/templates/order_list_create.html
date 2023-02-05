@@ -34,6 +34,7 @@
 
 {% if form %}
   <form action="" method="post" class="">
+    {{ form.media }}
     {% csrf_token %}
     <div class="">
       <span class="input-group-text" id="">Create new {{ title.lower }}:</span>

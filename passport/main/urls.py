@@ -3,7 +3,6 @@ from django.contrib.auth.views import LoginView, LogoutView
 from .views import CommonUpdate, CommonListCreate, CommonDelete
 from .models import Item, Series, Distributor, Recipient, Set, Order, City
 from . import views as v
-from dal import autocomplete
 
 urlpatterns = [
     path('', v.HomeView.as_view(), name='home'),
@@ -26,17 +25,7 @@ generic_views = [Series, City, Distributor, Recipient]
 for model in generic_views:
     text = model.__name__.lower()
     urlpatterns += [
-        path(f'{text}/', CommonListCreate.as_view(model=model,
-                                                  text=text), name=f'{text}'),
-        path(f'{text}/<int:pk>', CommonUpdate.as_view(model=model,
-                                                      text=text), name=f'{text}_edit'),
-        path(f'{text}/<int:pk>/delete', CommonDelete.as_view(model=model,
-                                                             text=text), name=f'{text}_delete'),
+        path(f'{text}/', CommonListCreate.as_view(model=model, text=text), name=f'{text}'),
+        path(f'{text}/<int:pk>', CommonUpdate.as_view(model=model, text=text), name=f'{text}_edit'),
+        path(f'{text}/<int:pk>/delete', CommonDelete.as_view(model=model, text=text), name=f'{text}_delete'),
     ]
-
-urlpatterns += [
-    path('item-autocomplete/', v.ItemAutocomplete.as_view(), name='item-autocomplete'),
-    path('city-autocomplete/',
-         autocomplete.Select2QuerySetView.as_view(model=City), name='city-autocomplete'),
-    path('set-autocomplete/', v.SetAutocomplete.as_view(), name='set-autocomplete'),
-]

@@ -2,7 +2,7 @@ import django_filters
 from .models import Item, Set, Series, Order, Distributor, Recipient, City
 from django import forms
 from django.forms.widgets import TextInput
-from dal import autocomplete
+from ajax_select.fields import AutoCompleteSelectWidget, AutoCompleteWidget
 
 
 def filter_factory(_model):
@@ -53,8 +53,7 @@ class OrderFilter(django_filters.FilterSet):
     # TODO: date range picker
     date = django_filters.DateFilter(lookup_expr='gt', widget=forms.DateInput(attrs={'type': 'date'}))
     sets = django_filters.ModelChoiceFilter(queryset=Set.objects.all(),
-                                            widget=autocomplete.ModelSelect2(url='set-autocomplete',
-                                                                             attrs={'id': 'set-filter'}))
+                                            widget=AutoCompleteWidget('set'))
 
     class Meta:
         model = Order

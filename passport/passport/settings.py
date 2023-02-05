@@ -34,8 +34,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'dal',
-    'dal_select2',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +45,7 @@ INSTALLED_APPS = [
     'django_tables2',
     'django_filters',
     'bootstrap5',
+    'ajax_select',
     'debug_toolbar',
     # 'cachalot',
 ]
