@@ -11,6 +11,7 @@ Delete item
   {% csrf_token %}
   <p>Do you really want to delete "{{ object }}"?</p>
   <button type="submit" class="btn btn-danger">Delete</button>
+  <a href="{{ request.META.HTTP_REFERER|escape }}" class="btn btn-default">Cancel</a>
 </form>
 <br>
 {% endblock content %}

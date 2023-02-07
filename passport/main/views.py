@@ -1,5 +1,5 @@
 from django.views.generic import CreateView, UpdateView, DeleteView, TemplateView, DetailView
-from .models import Item, Set, SetItem, Order, City
+from .models import Item, Set, SetItem, Order
 from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
 from .forms import SetForm, SetBasicForm, modelform_init, ItemForm, OrderForm, set_item_formset
@@ -18,32 +18,32 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class CommonUpdate(LoginRequiredMixin, UpdateView):
-    text = None
     template_name = 'common_edit.html'
 
     def __init__(self, *args, **kwargs):
         super(CommonUpdate, self).__init__(*args, **kwargs)
         self.form_class = modelform_init(self.model)
-        self.success_url = reverse_lazy(f'{self.text}')
+        self.success_url = reverse_lazy(self.model.__name__.lower())
 
 
 class CommonDelete(LoginRequiredMixin, DeleteView):
-    text = None
     template_name = 'common_delete.html'
 
-    def get_success_url(self, *args, **kwargs):
-        return reverse_lazy(self.text, args=[self.kwargs['slug']])
+    def __init__(self, *args, **kwargs):
+        super(CommonDelete, self).__init__(*args, **kwargs)
+        self.success_url = reverse_lazy(self.model.__name__.lower())
 
 
 class CommonListCreate(LoginRequiredMixin, ExportMixin, SingleTableMixin, CreateView, FilterView):
-    text = None
     template_name = "common_list_edit.html"
 
     def __init__(self, *args, **kwargs):
         super(CommonListCreate, self).__init__(*args, **kwargs)
-        self.table_class = table_factory(self.model, self.text)
+        text = self.model.__name__.lower()
+        self.table_class = table_factory(self.model, text)
         self.form_class = modelform_init(self.model)
-        self.success_url = reverse_lazy(f'{self.text}')
+        if not callable(self.model.get_absolute_url):
+            self.success_url = reverse_lazy(text)
         self.filterset_class = filter_factory(self.model)
 
     def get_context_data(self, **kwargs):
@@ -118,7 +118,7 @@ class ItemListView(CommonListCreate):
         self.table_class = table_factory(Item, 'item')
         self.filterset_class = ItemFilter
         self.form_class = ItemForm
-        self.success_url = reverse_lazy('item')
+        self.object_list = self.model.objects.all()
 
 
 class SetUpdateView(LoginRequiredMixin, UpdateView):
@@ -158,7 +158,6 @@ class OrderListView(CommonListCreate):
         self.form_class = OrderForm
         self.filterset_class = OrderFilter
         self.table_class = OrderTable
-        self.success_url = reverse_lazy('order')
         self.object_list = self.model.objects.all()
 
     def form_valid(self, form):

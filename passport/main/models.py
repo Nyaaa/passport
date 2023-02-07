@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.functional import cached_property
+from django.urls import reverse
 
 
 # Create your models here.
@@ -19,6 +20,9 @@ class Item(models.Model):
     def __str__(self):
         return f'{self.article}'
 
+    def get_absolute_url(self):
+        return reverse('item_edit', args=[self.pk])
+
 
 class SetItem(models.Model):
     set = models.ForeignKey('Set', on_delete=models.CASCADE)
@@ -36,6 +40,9 @@ class Set(models.Model):
 
     def __str__(self):
         return f'{self.serial}'
+
+    def get_absolute_url(self):
+        return reverse('set_edit', args=[self.pk])
 
     @cached_property
     def assigned_to(self):
@@ -71,3 +78,6 @@ class Order(models.Model):
     city = models.ForeignKey(City, on_delete=models.RESTRICT)
     sets = models.ManyToManyField(Set)
     comment = models.TextField(blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse('order_edit', args=[self.pk])
