@@ -1,15 +1,15 @@
-from django.views.generic import CreateView, UpdateView, DeleteView, TemplateView, DetailView
+from django.views.generic import CreateView, UpdateView, DeleteView,\
+    TemplateView, DetailView
 from .models import Item, Set, SetItem, Order
 from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
 from .forms import SetForm, SetBasicForm, modelform_init, ItemForm, OrderForm, set_item_formset
 from django_filters.views import FilterView
-from django_tables2.views import SingleTableMixin
-from django_tables2.export.views import ExportMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from collections import defaultdict
+from django.core import serializers
 
 
 # Create your views here.
@@ -26,6 +26,22 @@ class CommonUpdate(LoginRequiredMixin, UpdateView):
         self.success_url = reverse_lazy(self.model.__name__.lower())
 
 
+class CommonListView(LoginRequiredMixin, FilterView):
+    template_name = 'common_list.html'
+    paginate_by = 20
+
+    def __init__(self, *args, **kwargs):
+        super(CommonListView, self).__init__(*args, **kwargs)
+        self.filterset_class = filter_factory(self.model)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['edit_url'] = f'{self.model.__name__.lower()}_edit'
+        context['delete_url'] = f'{self.model.__name__.lower()}_delete'
+        context['query_string'] = self.request.GET.urlencode()
+        return context
+
+
 class CommonDelete(LoginRequiredMixin, DeleteView):
     template_name = 'common_delete.html'
 
@@ -34,27 +50,15 @@ class CommonDelete(LoginRequiredMixin, DeleteView):
         self.success_url = reverse_lazy(self.model.__name__.lower())
 
 
-class CommonListCreate(LoginRequiredMixin, ExportMixin, SingleTableMixin, CreateView, FilterView):
-    template_name = "common_list_edit.html"
-
-    def __init__(self, *args, **kwargs):
-        super(CommonListCreate, self).__init__(*args, **kwargs)
-        text = self.model.__name__.lower()
-        self.table_class = table_factory(self.model, text)
-        self.form_class = modelform_init(self.model)
-        if not callable(self.model.get_absolute_url):
-            self.success_url = reverse_lazy(text)
-        self.filterset_class = filter_factory(self.model)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = self.model.__name__
-        return context
+class CommonCreateView(LoginRequiredMixin, CreateView):
+    # TODO implement this
+    pass
 
 
-class SetListView(CommonListCreate):
+class SetListView(CommonListView):
     model = Set
     ordering = 'serial'
+    template_name = 'set_list.html'
 
     def __init__(self, *args, **kwargs):
         super(SetListView, self).__init__(*args, **kwargs)
@@ -85,6 +89,10 @@ class SetListView(CommonListCreate):
         response = super().form_valid(form)
         return response
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs
+
 
 class SetDetailView(LoginRequiredMixin, DetailView):
     model = Set
@@ -106,19 +114,20 @@ class SetCreateView(LoginRequiredMixin, CreateView):
     model = Set
     template_name = 'set_edit.html'
     form_class = SetForm
-    success_url = reverse_lazy('set')
 
 
-class ItemListView(CommonListCreate):
+class ItemListView(CommonListView):
     ordering = 'article'
 
     def __init__(self, *args, **kwargs):
-        super(CommonListCreate, self).__init__(*args, **kwargs)
+        super(ItemListView, self).__init__(*args, **kwargs)
         self.model = Item
-        self.table_class = table_factory(Item, 'item')
         self.filterset_class = ItemFilter
-        self.form_class = ItemForm
-        self.object_list = self.model.objects.all()
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.select_related('series')
+        return qs
 
 
 class SetUpdateView(LoginRequiredMixin, UpdateView):
@@ -149,11 +158,11 @@ class SetUpdateView(LoginRequiredMixin, UpdateView):
         return render(request, 'set_edit.html', {'formset': formset, 'form': form})
 
 
-class OrderListView(CommonListCreate):
-    template_name = 'order_list_create.html'
+class OrderListView(CommonListView):
+    template_name = 'order_list.html'
 
     def __init__(self, *args, **kwargs):
-        super(CommonListCreate, self).__init__(*args, **kwargs)
+        super(OrderListView, self).__init__(*args, **kwargs)
         self.model = Order
         self.form_class = OrderForm
         self.filterset_class = OrderFilter

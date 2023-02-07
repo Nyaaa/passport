@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import CommonUpdate, CommonListCreate, CommonDelete
+from .views import CommonUpdate, CommonCreateView, CommonDelete, CommonListView
 from .models import Item, Series, Distributor, Recipient, Set, Order, City
 from . import views as v
 
@@ -25,7 +25,7 @@ generic_views = [Series, City, Distributor, Recipient]
 for model in generic_views:
     text = model.__name__.lower()
     urlpatterns += [
-        path(f'{text}/', CommonListCreate.as_view(model=model), name=f'{text}'),
-        path(f'{text}/<int:pk>', CommonUpdate.as_view(model=model), name=f'{text}_edit'),
+        path(f'{text}/', CommonListView.as_view(model=model), name=f'{text}'),
+        path(f'{text}/<int:pk>/', CommonUpdate.as_view(model=model), name=f'{text}_edit'),
         path(f'{text}/<int:pk>/delete', CommonDelete.as_view(model=model), name=f'{text}_delete'),
     ]

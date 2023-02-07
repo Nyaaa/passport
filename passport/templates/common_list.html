@@ -1,0 +1,30 @@
+{% extends 'base/default.html' %}
+{% load bootstrap5 %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+{% bootstrap_messages %}
+
+{% if filter %}{% include 'filter.html' %}{% endif %}
+
+<table class="table table-striped">
+  <thead>
+    <th>ID</th>
+    <th>Name</th>
+  </thead>
+{% for item in object_list %}
+  <tr>
+    <td>{{ item.pk }}</td>
+    <td>{{ item.name }}</td>
+    <td>{{ item.series }}</td>
+    <td>{{ item.is_set }}</td>
+    <td><a href="{% url edit_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-pen-to-square"></i></a></td>
+    <td><a href="{% url delete_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-trash-can"></i></a></td>
+  </tr>
+{% endfor %}
+</table>
+
+<div>{% bootstrap_pagination page_obj %}</div>
+<!--TODO improve styling-->
+{% endblock content %}
