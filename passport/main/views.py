@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from collections import defaultdict
-from django.core import serializers
+from django.db.models import OuterRef, Subquery
 
 
 # Create your views here.
@@ -29,6 +29,7 @@ class CommonUpdate(LoginRequiredMixin, UpdateView):
 class CommonListView(LoginRequiredMixin, FilterView):
     template_name = 'common_list.html'
     paginate_by = 20
+    ordering = 'name'
 
     def __init__(self, *args, **kwargs):
         super(CommonListView, self).__init__(*args, **kwargs)
@@ -52,6 +53,8 @@ class CommonDelete(LoginRequiredMixin, DeleteView):
 
 class CommonCreateView(LoginRequiredMixin, CreateView):
     # TODO implement this
+    # strip spaces
+    # capitalize
     pass
 
 
@@ -91,6 +94,13 @@ class SetListView(CommonListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        qs = qs.select_related('article')
+        latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
+        qs = qs.prefetch_related('order_set').annotate(recipient=Subquery(latest_order.values('recipient__name')),
+                                                       distributor=Subquery(latest_order.values('distributor__name')),
+                                                       city=Subquery(latest_order.values('city__name')),
+                                                       date=Subquery(latest_order.values('date')),
+                                                       document=Subquery(latest_order.values('document')))
         return qs
 
 
@@ -175,7 +185,6 @@ class OrderListView(CommonListView):
         return response
 
     def get_queryset(self):
-        """This fixes N+1 problem created by django-tables"""
         qs = super().get_queryset()
         qs = qs.select_related('distributor', 'recipient', 'city')
         qs = qs.prefetch_related('sets')

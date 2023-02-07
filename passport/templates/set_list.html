@@ -10,15 +10,25 @@
 
 <table class="table table-striped">
   <thead>
-    <th>ID</th>
-    <th>Name</th>
+    <th>Serial</th>
+    <th>Article</th>
+    <th>Comment</th>
+    <th>Date</th>
+    <th>City</th>
+    <th>Distributor</th>
+    <th>Recipient</th>
+    <th>Document</th>
   </thead>
 {% for item in object_list %}
   <tr>
     <td>{{ item.serial }}</td>
     <td>{{ item.article }}</td>
     <td>{{ item.comment }}</td>
-    <td>{{ item.order_set.all }}</td>
+    <td>{{ item.date }}</td>
+    <td>{{ item.city }}</td>
+    <td>{{ item.distributor }}</td>
+    <td>{{ item.recipient }}</td>
+    <td>{{ item.document }}</td>
     <td><a href="{% url edit_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="{% url delete_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-trash-can"></i></a></td>
   </tr>
