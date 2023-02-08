@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'users',
-    'django_tables2',
     'django_filters',
     'bootstrap5',
     'ajax_select',

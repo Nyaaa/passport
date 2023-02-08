@@ -1,5 +1,6 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
+{% load custom_filters %}
 
 {% block title %}{{ title }} list{% endblock title %}
 
@@ -11,8 +12,12 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Name</th>
+      <th><a href="?{% switch_order request 'pk' %}">ID</a></th>
+      <th><a href="?{% switch_order request 'name' %}">Name</a></th>
+      {% if title == 'Item' %}
+      <th><a href="?{% switch_order request 'series' %}">Series</a></th>
+      <th><a href="?{% switch_order request 'is_set' %}">Set</a></th>
+      {% endif %}
     </tr>
   </thead>
 {% for item in object_list %}

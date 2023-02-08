@@ -72,6 +72,15 @@ class CommonListView(LoginRequiredMixin, FilterView):
         context['form'] = modelform_init(self.model)
         return context
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # Set ordering breaks without this
+        if self.model != Set:
+            order_by = self.request.GET.get('order_by')
+            if order_by:
+                qs = qs.order_by(order_by)
+        return qs
+
 
 class CommonDelete(LoginRequiredMixin, DeleteView):
     template_name = 'common_delete.html'
@@ -142,6 +151,9 @@ class SetListView(CommonListView):
                                                        city=Subquery(latest_order.values('city__name')),
                                                        date=Subquery(latest_order.values('date')),
                                                        document=Subquery(latest_order.values('document')))
+        order_by = self.request.GET.get('order_by')
+        if order_by:
+            qs = qs.order_by(order_by)
         return qs
 
 

@@ -1,5 +1,6 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
+{% load custom_filters %}
 
 {% block title %}{{ title }} list{% endblock title %}
 
@@ -11,11 +12,11 @@
 <table aria-labelledby="{{ title }}" class="table table-striped">
   <thead>
     <tr>
-      <th>Date</th>
-      <th>Distributor</th>
-      <th>Recipient</th>
-      <th>City</th>
-      <th>Document</th>
+      <th><a href="?{% switch_order request 'date' %}">Date</a></th>
+      <th><a href="?{% switch_order request 'distributor' %}">Distributor</a></th>
+      <th><a href="?{% switch_order request 'recipient' %}">Recipient</a></th>
+      <th><a href="?{% switch_order request 'city' %}">City</a></th>
+      <th><a href="?{% switch_order request 'document' %}">Document</a></th>
       <th>Comment</th>
       <th>Sets</th>
     </tr>
