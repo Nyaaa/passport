@@ -1,23 +1,25 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
 
-{% block title %}{{ title }}{% endblock title %}
+{% block title %}{{ title }} list{% endblock title %}
 
 {% block content %}
 {% bootstrap_messages %}
 
-{% if filter %}{% include 'filter.html' %}{% endif %}
+{% if filter %}{% include 'base/filter.html' %}{% endif %}
 
-<table class="table table-striped">
+<table aria-labelledby="{{ title }} list" class="table table-striped">
   <thead>
-    <th>Serial</th>
-    <th>Article</th>
-    <th>Comment</th>
-    <th>Date</th>
-    <th>City</th>
-    <th>Distributor</th>
-    <th>Recipient</th>
-    <th>Document</th>
+    <tr>
+      <th>Serial</th>
+      <th>Article</th>
+      <th>Comment</th>
+      <th>Date</th>
+      <th>City</th>
+      <th>Distributor</th>
+      <th>Recipient</th>
+      <th>Document</th>
+    </tr>
   </thead>
 {% for item in object_list %}
   <tr>
@@ -29,6 +31,7 @@
     <td>{{ item.distributor }}</td>
     <td>{{ item.recipient }}</td>
     <td>{{ item.document }}</td>
+    <td><a href="{% url detail_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-file-lines"></i></a></td>
     <td><a href="{% url edit_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="{% url delete_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-trash-can"></i></a></td>
   </tr>
@@ -37,4 +40,5 @@
 
 <div>{% bootstrap_pagination page_obj %}</div>
 <!--TODO improve styling-->
+{% if form %}{% include 'base/create_form.html' %}{% endif %}
 {% endblock content %}

@@ -1,17 +1,19 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
 
-{% block title %}{{ title }}{% endblock title %}
+{% block title %}{{ title }} list{% endblock title %}
 
 {% block content %}
 {% bootstrap_messages %}
 
-{% if filter %}{% include 'filter.html' %}{% endif %}
+{% if filter %}{% include 'base/filter.html' %}{% endif %}
 
 <table class="table table-striped">
   <thead>
-    <th>ID</th>
-    <th>Name</th>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+    </tr>
   </thead>
 {% for item in object_list %}
   <tr>
@@ -27,4 +29,5 @@
 
 <div>{% bootstrap_pagination page_obj %}</div>
 <!--TODO improve styling-->
+{% if form %}{% include 'base/create_form.html' %}{% endif %}
 {% endblock content %}

@@ -1,22 +1,24 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
 
-{% block title %}{{ title }}{% endblock title %}
+{% block title %}{{ title }} list{% endblock title %}
 
 {% block content %}
 {% bootstrap_messages %}
 
-{% if filter %}{% include 'filter.html' %}{% endif %}
+{% if filter %}{% include 'base/filter.html' %}{% endif %}
 
-<table class="table table-striped">
+<table aria-labelledby="{{ title }}" class="table table-striped">
   <thead>
-    <th>Date</th>
-    <th>Distributor</th>
-    <th>Recipient</th>
-    <th>City</th>
-    <th>Document</th>
-    <th>Comment</th>
-    <th>Sets</th>
+    <tr>
+      <th>Date</th>
+      <th>Distributor</th>
+      <th>Recipient</th>
+      <th>City</th>
+      <th>Document</th>
+      <th>Comment</th>
+      <th>Sets</th>
+    </tr>
   </thead>
 {% for item in object_list %}
   <tr>
@@ -27,6 +29,7 @@
     <td>{{ item.document }}</td>
     <td>{{ item.comment }}</td>
     <td>{% for set in item.sets.all %}{{ set.serial }} {% endfor %}</td>
+    <td><a href="{% url detail_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-file-lines"></i></a></td>
     <td><a href="{% url edit_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-pen-to-square"></i></a></td>
     <td><a href="{% url delete_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-trash-can"></i></a></td>
   </tr>
@@ -35,4 +38,15 @@
 
 <div>{% bootstrap_pagination page_obj %}</div>
 <!--TODO improve styling-->
+{% if form %}
+  <form action="{% url create_url %}" method="post" class="">
+    {{ form.media }}
+    {% csrf_token %}
+    <div class="">
+      <span class="input-group-text" id="">Create new {{ title.lower }}:</span>
+      {% bootstrap_form form layout='' %}
+      {% bootstrap_button button_type="submit" content="OK" %}
+    </div>
+  </form>
+{% endif %}
 {% endblock content %}
