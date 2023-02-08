@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.functional import cached_property
 from django.urls import reverse
 
 
@@ -43,10 +42,6 @@ class Set(models.Model):
 
     def get_absolute_url(self):
         return reverse('set_edit', args=[self.pk])
-
-    @cached_property
-    def assigned_to(self):
-        return self.order_set.select_related().filter(sets=self).order_by('date').last()
 
 
 class Distributor(models.Model):
