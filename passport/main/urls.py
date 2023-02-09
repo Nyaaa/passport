@@ -20,7 +20,7 @@ urlpatterns = [
     path('order/', v.OrderListView.as_view(), name='order'),
     path('order/create/', CreateUpdateView.as_view(model=Order), name='order_create'),
     path('order/<int:pk>/', v.OrderDetailView.as_view(), name='order_detail'),
-    path('order/<int:pk>/edit/', CreateUpdateView.as_view(model=Order), name='order_edit'),
+    path('order/<int:pk>/edit/', v.OrderUpdateView.as_view(), name='order_edit'),
     path('order/<int:pk>/delete/', CommonDelete.as_view(model=Order), name='order_delete'),
 ]
 
