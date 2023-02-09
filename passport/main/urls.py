@@ -22,6 +22,7 @@ urlpatterns = [
     path('order/<int:pk>/', v.OrderDetailView.as_view(), name='order_detail'),
     path('order/<int:pk>/edit/', v.OrderUpdateView.as_view(), name='order_edit'),
     path('order/<int:pk>/delete/', CommonDelete.as_view(model=Order), name='order_delete'),
+    path('export/', v.export_csv, name='export'),
 ]
 
 generic_views = [Series, City, Distributor, Recipient]

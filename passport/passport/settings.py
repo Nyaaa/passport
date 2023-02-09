@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'bootstrap5',
     'ajax_select',
     'debug_toolbar',
+    'import_export',
     # 'cachalot',
 ]
 
