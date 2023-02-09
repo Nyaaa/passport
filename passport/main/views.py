@@ -70,6 +70,8 @@ class CommonListView(LoginRequiredMixin, FilterView):
         context['create_url'] = f'{self.name}_create'
         context['query_string'] = self.request.GET.urlencode()
         context['form'] = modelform_init(self.model)
+        options = self.model._meta
+        context['fields'] = [field for field in sorted(options.concrete_fields + options.many_to_many)]
         return context
 
     def get_queryset(self):
@@ -173,12 +175,6 @@ class SetDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SetCreateView(LoginRequiredMixin, CreateView):
-    model = Set
-    template_name = 'set_edit.html'
-    form_class = SetForm
-
-
 class SetUpdateView(LoginRequiredMixin, UpdateView):
     model = Set
     template_name = 'set_edit.html'
@@ -252,3 +248,14 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         context['set_items'] = sets_items
 
         return context
+
+
+class OrderUpdateView(CreateUpdateView):
+    template_name = 'common_edit.html'
+
+    def __init__(self, *args, **kwargs):
+        super(CreateUpdateView, self).__init__(*args, **kwargs)
+        self.form_class = OrderForm
+        self.model = Order
+        self.name = self.model.__name__.lower()
+        self.success_url = reverse_lazy(self.name)

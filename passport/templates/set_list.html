@@ -39,7 +39,11 @@
 {% endfor %}
 </table>
 
-<div>{% bootstrap_pagination page_obj %}</div>
+<div class="row justify-content-center">
+  <div class="col-xl-auto">
+  {% bootstrap_pagination page_obj %}
+    </div>
+</div>
 <!--TODO improve styling-->
 {% if form %}{% include 'base/create_form.html' %}{% endif %}
 {% endblock content %}

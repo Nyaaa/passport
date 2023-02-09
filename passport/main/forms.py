@@ -60,7 +60,7 @@ class SetBasicForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['distributor', 'recipient', 'city', 'sets']
+        fields = ['distributor', 'recipient', 'comment', 'city', 'sets']
         widgets = {
             'city': AutoCompleteSelectWidget('city'),
             'sets': AutoCompleteSelectMultipleWidget('set'),
