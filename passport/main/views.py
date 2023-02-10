@@ -1,9 +1,12 @@
 from django.views.generic import CreateView, UpdateView, DeleteView, \
-    TemplateView, DetailView
+    TemplateView, DetailView, FormView
 from .models import Item, Set, SetItem, Order
+from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
 from .forms import SetForm, SetBasicForm, modelform_init, OrderForm, set_item_formset
 from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
+from django_tables2.export.views import ExportMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -52,7 +55,7 @@ class CreateUpdateView(
         return context
 
 
-class CommonListView(LoginRequiredMixin, FilterView):
+class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterView, FormView):
     template_name = 'common_list.html'
     paginate_by = 20
     ordering = 'name'
@@ -60,18 +63,16 @@ class CommonListView(LoginRequiredMixin, FilterView):
     def __init__(self, *args, **kwargs):
         super(CommonListView, self).__init__(*args, **kwargs)
         self.name = self.model.__name__.lower()
+        self.form_class = modelform_init(self.model)
+        self.table_class = table_factory(self.model, self.name)
         self.filterset_class = filter_factory(self.model)
+        self.form_class = modelform_init(self.model)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = f'{self.model.__name__}'
-        context['edit_url'] = f'{self.name}_edit'
-        context['delete_url'] = f'{self.name}_delete'
         context['create_url'] = f'{self.name}_create'
         context['query_string'] = self.request.GET.urlencode()
-        context['form'] = modelform_init(self.model)
-        options = self.model._meta
-        context['fields'] = [field for field in sorted(options.concrete_fields + options.many_to_many)]
         return context
 
     def get_queryset(self):
@@ -109,17 +110,13 @@ class ItemListView(CommonListView):
 class SetListView(CommonListView):
     model = Set
     ordering = 'serial'
-    template_name = 'set_list.html'
+    template_name = 'common_list.html'
 
     def __init__(self, *args, **kwargs):
         super(SetListView, self).__init__(*args, **kwargs)
         self.filterset_class = SetFilter
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = SetBasicForm
-        context['detail_url'] = f'{self.name}_detail'
-        return context
+        self.table_class = SetTable
+        self.form_class = SetBasicForm
 
     def form_valid(self, form):
         _set = form.save(commit=False)
@@ -212,17 +209,13 @@ class OrderListView(CommonListView):
         super(OrderListView, self).__init__(*args, **kwargs)
         self.filterset_class = OrderFilter
         self.object_list = self.model.objects.all()
+        self.table_class = OrderTable
+        self.form_class = OrderForm
 
     def form_valid(self, form):
         _order = form.save(commit=False)
         response = super().form_valid(form)
         return response
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = OrderForm
-        context['detail_url'] = f'{self.name}_detail'
-        return context
 
     def get_queryset(self):
         qs = super().get_queryset()
