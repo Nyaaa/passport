@@ -1,47 +1,55 @@
 import django_tables2 as tables
 from .models import Set, Order
-from django_tables2.utils import A
 from django.utils.html import format_html
 
 
 class MetaColumn(tables.Column):
     def __init__(self, *args, **kwargs):
-        self.action = kwargs.pop('action')
         super().__init__(*args, **kwargs)
         self.orderable = False
         self.exclude_from_export = True
         self.empty_values = ()
-        self.attrs = {'td': {'class': 'text-center'},
-                      'th': {'style': 'width:1%'},
-                      }
-
-    def render(self, value):
-        if self.action == 'Delete':
-            return format_html('<i class="fa-regular fa-trash-can"></i>')
-        elif self.action == 'Edit':
-            return format_html('<i class="fa-regular fa-pen-to-square"></i>')
-        else:
-            return format_html('<i class="fa-regular fa-file-lines"></i>')
+        self.verbose_name = ''
+        self.attrs = {'td': {'class': 'text-center'}}
 
 
-def table_factory(_model, text: str):
+def table_factory(_model):
     class Table(tables.Table):
-        edit = MetaColumn(linkify=(f'{text}_edit', [A('pk')]), action='Edit')
-        delete = MetaColumn(linkify=(f'{text}_delete', [A('pk')]), action='Delete')
+        view = MetaColumn()
+        edit = MetaColumn()
+        delete = MetaColumn()
+
+        def __init__(self, *args, **kwargs):
+            self.request = kwargs.pop("request")
+            super().__init__(*args, **kwargs)
+            self.q_str = self.request.GET.urlencode()
+
+        def render_edit(self, record):
+            return format_html(f'<a href="{record.pk}/edit/?{self.q_str}">'
+                               '<i class="fa-regular fa-pen-to-square"></i></a>')
+
+        def render_delete(self, record):
+            return format_html(f'<a href="{record.pk}/delete/?{self.q_str}">'
+                               '<i class="fa-regular fa-trash-can"></i></a>')
+
+        def render_view(self, record):
+            return format_html(f'<a href="{record.pk}/?{self.q_str}">'
+                               '<i class="fa-regular fa-file-lines"></i></a>')
 
         class Meta:
             model = _model
             template_name = 'django_tables2/bootstrap5.html'
             attrs = {'class': 'table table-striped'}
             sequence = ('...', 'edit', 'delete')
+            exclude = ('view',)
 
     return Table
 
 
-class SetTable(tables.Table):
-    view = MetaColumn(linkify=('set_detail', [A('pk')]), action='View')
-    edit = MetaColumn(linkify=('set_edit', [A('pk')]), action='Edit')
-    delete = MetaColumn(linkify=('set_delete', [A('pk')]), action='Delete')
+class SetTable(table_factory(Set)):
+    view = MetaColumn()
+    edit = MetaColumn()
+    delete = MetaColumn()
     assigned_to = tables.Column(accessor='distributor')
     date = tables.DateTimeColumn(accessor='date', format='Y-m-d')
     recipient = tables.Column(accessor='recipient')
@@ -55,10 +63,10 @@ class SetTable(tables.Table):
         sequence = ('...', 'view', 'edit', 'delete')
 
 
-class OrderTable(tables.Table):
-    view = MetaColumn(linkify=('order_detail', [A('pk')]), action='View')
-    edit = MetaColumn(linkify=('order_edit', [A('pk')]), action='Edit')
-    delete = MetaColumn(linkify=('order_delete', [A('pk')]), action='Delete')
+class OrderTable(table_factory(Order)):
+    view = MetaColumn()
+    edit = MetaColumn()
+    delete = MetaColumn()
     date = tables.DateTimeColumn(format='Y-m-d')
     sets = tables.ManyToManyColumn()
 
