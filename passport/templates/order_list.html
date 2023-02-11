@@ -1,6 +1,6 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
-{% load custom_filters %}
+{% load render_table from django_tables2 %}
 
 {% block title %}{{ title }} list{% endblock title %}
 
@@ -9,36 +9,8 @@
 
 {% if filter %}{% include 'base/filter.html' %}{% endif %}
 
-<table aria-labelledby="{{ title }}" class="table table-striped">
-  <thead>
-    <tr>
-      {% for field in fields %}
-      <th><a href="?{% switch_order request field.name %}">{{ field.name|title }}</a></th>
-      {% endfor %}
-    </tr>
-  </thead>
-{% for item in object_list %}
-  <tr>
-    <td>{{ item.id }}</td>
-    <td>{{ item.date }}</td>
-    <td>{{ item.distributor }}</td>
-    <td>{{ item.recipient }}</td>
-    <td>{{ item.document }}</td>
-    <td>{{ item.city }}</td>
-    <td>{% for set in item.sets.all %}{{ set.serial }} {% endfor %}</td>
-    <td>{{ item.comment }}</td>
-    <td><a href="{% url detail_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-file-lines"></i></a></td>
-    <td><a href="{% url edit_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-pen-to-square"></i></a></td>
-    <td><a href="{% url delete_url pk=item.pk %}?{{ query_string }}"><i class="fa-regular fa-trash-can"></i></a></td>
-  </tr>
-{% endfor %}
-</table>
+{% render_table table %}
 
-<div class="row justify-content-center">
-  <div class="col-xl-auto">
-  {% bootstrap_pagination page_obj %}
-    </div>
-</div>
 <!--TODO improve styling-->
 {% if form %}
   <form action="{% url create_url %}" method="post" class="">

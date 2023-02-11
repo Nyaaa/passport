@@ -10,7 +10,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('item/', v.ItemListView.as_view(), name='item'),
     path('item/create/', CreateUpdateView.as_view(model=Item), name='item_create'),
-    path('item/<str:pk>/', CreateUpdateView.as_view(model=Item), name='item_edit'),
+    path('item/<str:pk>/edit/', CreateUpdateView.as_view(model=Item), name='item_edit'),
     path('item/<str:pk>/delete/', CommonDelete.as_view(model=Item), name='item_delete'),
     path('set/', v.SetListView.as_view(), name='set'),
     path('set/create/', CreateUpdateView.as_view(model=Set), name='set_create'),
@@ -30,6 +30,6 @@ for model in generic_views:
     urlpatterns += [
         path(f'{text}/', CommonListView.as_view(model=model), name=f'{text}'),
         path(f'{text}/create/', CreateUpdateView.as_view(model=model), name=f'{text}_create'),
-        path(f'{text}/<int:pk>/', CreateUpdateView.as_view(model=model), name=f'{text}_edit'),
+        path(f'{text}/<int:pk>/edit/', CreateUpdateView.as_view(model=model), name=f'{text}_edit'),
         path(f'{text}/<int:pk>/delete/', CommonDelete.as_view(model=model), name=f'{text}_delete'),
     ]

@@ -1,9 +1,12 @@
-from django.views.generic import CreateView, UpdateView, DeleteView, \
-    TemplateView, DetailView
+from django.views.generic import UpdateView, DeleteView, TemplateView, DetailView, FormView, CreateView
 from .models import Item, Set, SetItem, Order
+from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
 from .forms import SetForm, SetBasicForm, modelform_init, OrderForm, set_item_formset
 from django_filters.views import FilterView
+from django_tables2.views import SingleTableMixin
+from django_tables2.export.views import ExportMixin
+from django_tables2 import RequestConfig
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -25,9 +28,11 @@ class CreateUpdateView(
 
     def __init__(self, *args, **kwargs):
         super(CreateUpdateView, self).__init__(*args, **kwargs)
-        self.form_class = modelform_init(self.model)
-        self.name = self.model.__name__.lower()
-        self.success_url = reverse_lazy(self.name)
+        if self.model == Set:
+            self.form_class = SetForm
+        else:
+            self.form_class = modelform_init(self.model)
+        self.text = self.model.__name__.lower()
 
     def get_object(self, queryset=None):
         try:
@@ -41,18 +46,19 @@ class CreateUpdateView(
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        self.success_url = f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
         return super(CreateUpdateView, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.object:
-            context['title'] = f'Edit {self.name}'
+            context['title'] = f'Edit {self.text}'
         else:
-            context['title'] = f'Create {self.name}'
+            context['title'] = f'Create {self.text}'
         return context
 
 
-class CommonListView(LoginRequiredMixin, FilterView):
+class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterView, FormView):
     template_name = 'common_list.html'
     paginate_by = 20
     ordering = 'name'
@@ -60,28 +66,21 @@ class CommonListView(LoginRequiredMixin, FilterView):
     def __init__(self, *args, **kwargs):
         super(CommonListView, self).__init__(*args, **kwargs)
         self.name = self.model.__name__.lower()
+        self.form_class = modelform_init(self.model)
+        self.table_class = table_factory(self.model)
         self.filterset_class = filter_factory(self.model)
+        self.form_class = modelform_init(self.model)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = f'{self.model.__name__}'
-        context['edit_url'] = f'{self.name}_edit'
-        context['delete_url'] = f'{self.name}_delete'
         context['create_url'] = f'{self.name}_create'
-        context['query_string'] = self.request.GET.urlencode()
-        context['form'] = modelform_init(self.model)
-        options = self.model._meta
-        context['fields'] = [field for field in sorted(options.concrete_fields + options.many_to_many)]
         return context
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        # Set ordering breaks without this
-        if self.model != Set:
-            order_by = self.request.GET.get('order_by')
-            if order_by:
-                qs = qs.order_by(order_by)
-        return qs
+    def get_table(self, **kwargs):
+        table = self.table_class(data=self.get_table_data(), request=self.request, **kwargs)
+        table.request = self.request
+        return RequestConfig(self.request, paginate=self.get_table_pagination(table)).configure(table)
 
 
 class CommonDelete(LoginRequiredMixin, DeleteView):
@@ -109,16 +108,19 @@ class ItemListView(CommonListView):
 class SetListView(CommonListView):
     model = Set
     ordering = 'serial'
-    template_name = 'set_list.html'
+    template_name = 'common_list.html'
 
     def __init__(self, *args, **kwargs):
         super(SetListView, self).__init__(*args, **kwargs)
         self.filterset_class = SetFilter
+        self.table_class = SetTable
+        self.form_class = SetBasicForm
+        self.success_url = reverse_lazy('set')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = SetBasicForm
-        context['detail_url'] = f'{self.name}_detail'
+        context['title'] = f'{self.model.__name__}'
+        context['create_url'] = f'{self.name}'
         return context
 
     def form_valid(self, form):
@@ -136,13 +138,12 @@ class SetListView(CommonListView):
         _set.serial = next_serial
 
         # copying m2m items
+        _set.save()
         if prev_items:
-            _set.save()
             copy_items = [SetItem(set=_set, item=item.item, amount=item.amount, tray=item.tray) for item in prev_items]
             SetItem.objects.bulk_create(copy_items)
 
-        response = super().form_valid(form)
-        return response
+        return super().form_valid(form)
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -153,9 +154,6 @@ class SetListView(CommonListView):
                                                        city=Subquery(latest_order.values('city__name')),
                                                        date=Subquery(latest_order.values('date')),
                                                        document=Subquery(latest_order.values('document')))
-        order_by = self.request.GET.get('order_by')
-        if order_by:
-            qs = qs.order_by(order_by)
         return qs
 
 
@@ -212,17 +210,13 @@ class OrderListView(CommonListView):
         super(OrderListView, self).__init__(*args, **kwargs)
         self.filterset_class = OrderFilter
         self.object_list = self.model.objects.all()
+        self.table_class = OrderTable
+        self.form_class = OrderForm
 
     def form_valid(self, form):
         _order = form.save(commit=False)
         response = super().form_valid(form)
         return response
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = OrderForm
-        context['detail_url'] = f'{self.name}_detail'
-        return context
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -257,5 +251,5 @@ class OrderUpdateView(CreateUpdateView):
         super(CreateUpdateView, self).__init__(*args, **kwargs)
         self.form_class = OrderForm
         self.model = Order
-        self.name = self.model.__name__.lower()
-        self.success_url = reverse_lazy(self.name)
+        self.text = self.model.__name__.lower()
+        self.success_url = reverse_lazy(self.text)

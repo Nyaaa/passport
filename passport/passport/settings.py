@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'main',
     'users',
     'django_filters',
+    'django_tables2',
     'bootstrap5',
     'ajax_select',
     'debug_toolbar',
