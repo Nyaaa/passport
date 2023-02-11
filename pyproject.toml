@@ -15,10 +15,11 @@ psycopg2 = "^2.9.5"
 django-cachalot = "^2.5.2"
 django-ajax-selects = "^2.2.0"
 django-tables2 = "^2.5.1"
-tablib = {extras = ["xls", "xlsx"], version = "^3.3.0"}
+tablib = {extras = ["ods", "xlsx"], version = "^3.3.0"}
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^3.8.1"
+django-stubs = "^1.14.0"
 
 [build-system]
 requires = ["poetry-core"]

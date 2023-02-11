@@ -1,15 +1,49 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
 {% load render_table from django_tables2 %}
+{% load export_url from django_tables2 %}
 
 {% block title %}{{ title }} list{% endblock title %}
 
 {% block content %}
 {% bootstrap_messages %}
+<div class="text-center">
+  <h1>{{ title }} list</h1>
+</div>
 
-{% if filter %}{% include 'base/filter.html' %}{% endif %}
+{% if filter %}
+<form class="" action="" method="get" >
+  <div class="input-group">
+    <span class="input-group-text" id="basic-addon1">Items: {{ page_obj.paginator.count }}</span>
+    {% bootstrap_form filter.form layout='inline' %}
+    {% bootstrap_button content='Filter' %}
+    {% if filter.is_bound %}
+      <a href="{% url request.resolver_match.view_name %}" class="btn btn-outline-primary">Clear filters</a>
+    {% endif %}
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Export</button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{% export_url 'csv' %}">CSV</a></li>
+      <li><a class="dropdown-item" href="{% export_url 'ods' %}">ODS</a></li>
+      <li><a class="dropdown-item" href="{% export_url 'xlsx' %}">XLSX</a></li>
+    </ul>
+  </div>
+</form>
+{% endif %}
+<hr>
 
 {% render_table table %}
 
-{% if form %}{% include 'base/create_form.html' %}{% endif %}
+{% if form %}
+<div class="row justify-content-center">
+  <form action="{% url create_url %}" method="post" class="col-auto">
+    {{ form.media }}
+    {% csrf_token %}
+
+      <h3>Create new {{ title.lower }}:</h3>
+      {% bootstrap_form form layout='' %}
+      {% bootstrap_button button_type="submit" content="OK" %}
+
+  </form>
+</div>
+{% endif %}
 {% endblock content %}

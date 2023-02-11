@@ -13,6 +13,13 @@ class MetaColumn(tables.Column):
         self.attrs = {'td': {'class': 'text-center'}}
 
 
+class BaseMeta:
+    model = None
+    template_name = 'django_tables2/bootstrap5.html'
+    attrs = {'class': 'table table-striped'}
+    sequence = ('...', 'view', 'edit', 'delete')
+
+
 def table_factory(_model):
     class Table(tables.Table):
         view = MetaColumn()
@@ -36,11 +43,8 @@ def table_factory(_model):
             return format_html(f'<a href="{record.pk}/?{self.q_str}">'
                                '<i class="fa-regular fa-file-lines"></i></a>')
 
-        class Meta:
+        class Meta(BaseMeta):
             model = _model
-            template_name = 'django_tables2/bootstrap5.html'
-            attrs = {'class': 'table table-striped'}
-            sequence = ('...', 'edit', 'delete')
             exclude = ('view',)
 
     return Table
@@ -56,11 +60,8 @@ class SetTable(table_factory(Set)):
     city = tables.Column(accessor='city')
     document = tables.Column(accessor='document')
 
-    class Meta:
+    class Meta(BaseMeta):
         model = Set
-        template_name = 'django_tables2/bootstrap5.html'
-        attrs = {'class': 'table table-striped'}
-        sequence = ('...', 'view', 'edit', 'delete')
 
 
 class OrderTable(table_factory(Order)):
@@ -70,9 +71,6 @@ class OrderTable(table_factory(Order)):
     date = tables.DateTimeColumn(format='Y-m-d')
     sets = tables.ManyToManyColumn()
 
-    class Meta:
+    class Meta(BaseMeta):
         model = Order
-        template_name = 'django_tables2/bootstrap5.html'
-        attrs = {'class': 'table table-striped'}
-        sequence = ('...', 'view', 'edit', 'delete')
         exclude = ('id',)

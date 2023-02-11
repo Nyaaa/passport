@@ -3,14 +3,15 @@ from .models import Item, Set, Order, SetItem
 from django.core.exceptions import ValidationError
 from ajax_select.fields import AutoCompleteWidget, AutoCompleteSelectWidget, AutoCompleteSelectMultipleWidget
 
-
-set_item_formset = forms.inlineformset_factory(Set, SetItem,
-                                               fields=['item', 'amount', 'tray', 'comment'],
-                                               widgets={'item': AutoCompleteWidget('article', attrs={'class': 'form-control'}),
-                                                        'amount': forms.NumberInput(attrs={'class': 'form-control'}),
-                                                        'tray': forms.NumberInput(attrs={'class': 'form-control'}),
-                                                        'comment': forms.TextInput(attrs={'class': 'form-control'}),
-                                                        })
+set_item_formset = forms.inlineformset_factory(
+    Set,
+    SetItem,
+    fields=['item', 'amount', 'tray', 'comment'],
+    widgets={'item': AutoCompleteWidget('article', attrs={'class': 'form-control'}),
+             'amount': forms.NumberInput(attrs={'class': 'form-control'}),
+             'tray': forms.NumberInput(attrs={'class': 'form-control'}),
+             'comment': forms.TextInput(attrs={'class': 'form-control'}),
+             })
 
 
 def modelform_init(_model):

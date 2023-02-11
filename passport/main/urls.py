@@ -9,6 +9,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('item/', v.ItemListView.as_view(), name='item'),
+    path('incomplete/', v.IncompleteSetView.as_view(), name='incomplete'),
     path('item/create/', CreateUpdateView.as_view(model=Item), name='item_create'),
     path('item/<str:pk>/edit/', CreateUpdateView.as_view(model=Item), name='item_edit'),
     path('item/<str:pk>/delete/', CommonDelete.as_view(model=Item), name='item_delete'),

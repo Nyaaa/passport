@@ -1,4 +1,4 @@
-from django.views.generic import UpdateView, DeleteView, TemplateView, DetailView, FormView, CreateView
+from django.views.generic import UpdateView, DeleteView, TemplateView, DetailView, FormView, ListView
 from .models import Item, Set, SetItem, Order
 from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
@@ -108,7 +108,6 @@ class ItemListView(CommonListView):
 class SetListView(CommonListView):
     model = Set
     ordering = 'serial'
-    template_name = 'common_list.html'
 
     def __init__(self, *args, **kwargs):
         super(SetListView, self).__init__(*args, **kwargs)
@@ -183,7 +182,7 @@ class SetUpdateView(LoginRequiredMixin, UpdateView):
         _set = Set.objects.get(serial=self.get_object())
         form = SetForm(instance=_set)
         formset = set_item_formset(instance=_set)
-        return render(request, 'set_edit.html', {'formset': formset, 'form': form})
+        return render(request, self.template_name, {'formset': formset, 'form': form})
 
     def post(self, request, *args, **kwargs):
         _set = Set.objects.get(serial=self.get_object())
@@ -198,12 +197,11 @@ class SetUpdateView(LoginRequiredMixin, UpdateView):
 
         form = SetForm(instance=_set)
         formset = set_item_formset(instance=_set)
-        return render(request, 'set_edit.html', {'formset': formset, 'form': form})
+        return render(request, self.template_name, {'formset': formset, 'form': form})
 
 
 class OrderListView(CommonListView):
     model = Order
-    template_name = 'order_list.html'
     ordering = '-date'
 
     def __init__(self, *args, **kwargs):
@@ -245,11 +243,25 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
 
 class OrderUpdateView(CreateUpdateView):
+    model = Order
     template_name = 'common_edit.html'
 
     def __init__(self, *args, **kwargs):
-        super(CreateUpdateView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.form_class = OrderForm
-        self.model = Order
         self.text = self.model.__name__.lower()
         self.success_url = reverse_lazy(self.text)
+
+
+class IncompleteSetView(LoginRequiredMixin, ListView):
+    model = Set
+    template_name = 'incomplete.html'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
+        sets = qs.prefetch_related('order_set').annotate(
+            recipient=Subquery(latest_order.values('recipient__name'))).filter(recipient='98')
+        qs = SetItem.objects.select_related().filter(set__in=sets).values('item', 'amount', 'comment', 'set')
+
+        return qs

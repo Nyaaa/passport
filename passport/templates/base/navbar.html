@@ -7,16 +7,28 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">Home</a>
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">Dashboard</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link {% if 'item' in request.path %}active{% endif %}" href="{% url 'item' %}">Items</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Lists
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'item' %}">Items</a></li>
+            <li><a class="dropdown-item" href="{% url 'series' %}">Series</a></li>
+            <li><a class="dropdown-item" href="{% url 'distributor' %}">Distributors</a></li>
+            <li><a class="dropdown-item" href="{% url 'recipient' %}">Recipients</a></li>
+            <li><a class="dropdown-item" href="{% url 'city' %}">Cities</a></li>
+          </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if 'set' in request.path %}active{% endif %}" href="{% url 'set' %}">Sets</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if 'order' in request.path %}active{% endif %}" href="{% url 'order' %}">Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if 'incomplete' in request.path %}active{% endif %}" href="{% url 'incomplete' %}">Incomplete sets</a>
         </li>
       </ul>
       <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}" role="button">Sigh out</a>
