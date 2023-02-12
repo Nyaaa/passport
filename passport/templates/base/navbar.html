@@ -31,6 +31,7 @@
           <a class="nav-link {% if 'incomplete' in request.path %}active{% endif %}" href="{% url 'incomplete' %}">Incomplete sets</a>
         </li>
       </ul>
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="lightSwitch"><i class="fa-regular fa-moon"></i></button>
       <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}" role="button">Sigh out</a>
     </div>
   </div>
