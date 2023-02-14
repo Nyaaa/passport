@@ -14,11 +14,17 @@ from collections import defaultdict
 from django.db.models import OuterRef, Subquery
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from .charts import distributor_sets_chart
 
 
 # Create your views here.
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['distributor_sets_chart'] = distributor_sets_chart()
+        return context
 
 
 class CreateUpdateView(
