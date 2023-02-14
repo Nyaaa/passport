@@ -1,5 +1,9 @@
 # passport
-Packing list management tool
+Packing list management tool / inventory management tool
+
+To fill database with auto-generated sample data, run:
+
+`python .\manage.py populate_db`
 
 ## TODO:
 * add success messages

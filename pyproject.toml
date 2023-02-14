@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "passport"
-version = "0.2.1"
+version = "0.2.2"
 description = "Packing list management tool"
 authors = ["Nyaaa <1457047+Nyaaa@users.noreply.github.com>"]
 readme = "README.md"
@@ -21,6 +21,7 @@ matplotlib = "^3.7.0"
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^3.8.1"
 django-stubs = "^1.14.0"
+faker = "^17.0.0"
 
 [build-system]
 requires = ["poetry-core"]
