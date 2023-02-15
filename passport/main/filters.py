@@ -42,7 +42,7 @@ class SetFilter(django_filters.FilterSet):
 
     @staticmethod
     def set_order_filter(queryset, name, value):
-        return queryset.filter(pk__in=Order.objects.filter(**{name: value}).values_list('sets'))
+        return queryset.filter(**{name: value})
 
     class Meta:
         model = Set
