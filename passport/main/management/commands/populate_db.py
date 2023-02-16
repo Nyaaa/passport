@@ -2,6 +2,7 @@ import random
 from django.core.management.base import BaseCommand
 from main.models import Item, Distributor, Recipient, Order, City, Set, Series, SetItem
 from faker import Faker
+from django.utils import timezone
 
 fake = Faker()
 
@@ -19,8 +20,9 @@ class Command(BaseCommand):
         lst = []
 
         City.objects.bulk_create([City(name=fake.city()) for _ in range(20)], ignore_conflicts=True)
+        Distributor.objects.create(name='Warehouse')
         Distributor.objects.bulk_create([Distributor(name=fake.company()) for _ in range(20)], ignore_conflicts=True)
-        Recipient.objects.create(name='98')
+        Recipient.objects.bulk_create([Recipient(name='98'), Recipient(name='93')])
         Recipient.objects.bulk_create([Recipient(name=fake.company()) for _ in range(20)], ignore_conflicts=True)
         Series.objects.bulk_create([Series(name=fake.safe_color_name()) for _ in range(20)], ignore_conflicts=True)
         Item.objects.bulk_create(self.gen_items(items, True), ignore_conflicts=True)
@@ -61,10 +63,18 @@ class Command(BaseCommand):
 
     @staticmethod
     def gen_orders(orders) -> list[Order]:
+        recip = Recipient.objects.filter(name__in=('93', '98')).order_by('name')
         bulk_list = []
         for _ in range(orders):
-            bulk_list.append(Order(distributor=random.choice(Distributor.objects.all()),
-                                   recipient=random.choice(Recipient.objects.all()),
+            distributor = random.choice(Distributor.objects.all())
+            if distributor.name == 'Warehouse':
+                recipient = random.choices(recip, weights=(20, 10))[0]
+            else:
+                recipient = random.choice(Recipient.objects.exclude(name__in=['93', '98']))
+
+            bulk_list.append(Order(date=fake.date_time_this_decade(tzinfo=timezone.utc),
+                                   distributor=distributor,
+                                   recipient=recipient,
                                    document=fake.unique.random_int(min=100000, max=999999),
                                    city=random.choice(City.objects.all())
                                    ))

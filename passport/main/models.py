@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 
 # Create your models here.
@@ -66,7 +67,7 @@ class City(models.Model):
 
 
 class Order(models.Model):
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(default=timezone.now)
     distributor = models.ForeignKey(Distributor, on_delete=models.RESTRICT)
     recipient = models.ForeignKey(Recipient, on_delete=models.RESTRICT)
     document = models.IntegerField(blank=True, null=True, unique=True)

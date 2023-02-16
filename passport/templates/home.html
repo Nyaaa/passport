@@ -2,6 +2,66 @@
 
 {% block title %}Home{% endblock title %}
 {% block content %}
-<h1>Dashboard</h1>
-{{ distributor_sets_chart|safe }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<h1 class="text-center">Dashboard</h1>
+<canvas id="distributor_sets_chart" width="800" height="400"></canvas>
+<div class="row">
+  <div class="col">
+    <canvas id="shipments_by_year" width="400" height="250"></canvas>
+  </div>
+  <div class="col">
+    <canvas id="returns" width="400" height="250"></canvas>
+  </div>
+</div>
+
+<script>
+const ctx = document.getElementById('distributor_sets_chart').getContext('2d');
+
+const myChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels : [{% for item in distributor_sets_chart %}"{{ item.distributor }}",{% endfor %}],
+      datasets: [{
+        label: "Sets by distributor",
+        data : [{% for item in distributor_sets_chart %}{{ item.count }},{% endfor %}],
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+  }
+});
+
+const ctx2 = document.getElementById('shipments_by_year').getContext('2d');
+
+const myChart2 = new Chart(ctx2, {
+  type: 'bar',
+  data: {
+    labels : [{% for item in shipments_by_year %}"{{ item.year|date:'Y' }}",{% endfor %}],
+      datasets: [{
+        label: "Shipments by year",
+        data : [{% for item in shipments_by_year %}{{ item.count }},{% endfor %}],
+        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+        borderColor: 'rgba(46, 204, 113, 1)',
+        borderWidth: 1
+      }]
+  }
+});
+
+const ctx3 = document.getElementById('returns').getContext('2d');
+
+const myChart3 = new Chart(ctx3, {
+  type: 'bar',
+  data: {
+    labels : [{% for item in returns %}"{{ item.year|date:'Y' }}",{% endfor %}],
+      datasets: [{
+        label: "Returns by year",
+        data : [{% for item in returns %}{{ item.count }},{% endfor %}],
+        backgroundColor: 'rgba(155, 89, 182, 0.2)',
+        borderColor: 'rgba(155, 89, 182,1.0)',
+        borderWidth: 1
+      }]
+  }
+});
+</script>
+
 {% endblock content %}

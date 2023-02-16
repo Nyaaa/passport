@@ -11,19 +11,40 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from collections import defaultdict
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef, Subquery, Count
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
-from .charts import distributor_sets_chart
+from django.db.models.functions import TruncYear
+from django.utils import timezone
 
 
 # Create your views here.
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'home.html'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        qs = Set.objects.all()
+        latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
+        self.qs = qs.prefetch_related('order_set').annotate(
+            distributor=Subquery(latest_order.values('distributor__name')),
+            date=Subquery(latest_order.values('date')),
+        )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['distributor_sets_chart'] = distributor_sets_chart()
+        date_limit = timezone.now() - timezone.timedelta(days=5*365)
+
+        context['distributor_sets_chart'] = self.qs.values('distributor').order_by('distributor')\
+            .annotate(count=Count('serial')).values('distributor', 'count')
+
+        context['shipments_by_year'] = Order.objects.exclude(distributor__name='Warehouse')\
+            .annotate(year=TruncYear('date')).values('year').annotate(count=Count('date'))\
+            .values('year', 'count').filter(year__gt=date_limit)
+
+        context['returns'] = Order.objects.filter(distributor__name='Warehouse')\
+            .annotate(year=TruncYear('date')).values('year').annotate(count=Count('date'))\
+            .values('year', 'count').filter(year__gt=date_limit)
         return context
 
 
