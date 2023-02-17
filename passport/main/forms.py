@@ -15,6 +15,14 @@ set_item_formset = forms.inlineformset_factory(
 
 
 def modelform_init(_model):
+    """
+    Create universal forms for basic models
+    Args:
+        _model (): Django model
+
+    Returns:
+        form(ModelForm)
+    """
     class BasicForm(forms.ModelForm):
         class Meta:
             model = _model

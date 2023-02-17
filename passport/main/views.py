@@ -9,7 +9,7 @@ from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
 from django_tables2 import RequestConfig
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from collections import defaultdict
 from django.db.models import OuterRef, Subquery, Count, ProtectedError, RestrictedError
@@ -21,6 +21,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 # Create your views here.
 class HomeView(LoginRequiredMixin, TemplateView):
+    """Dashboard / home page"""
     template_name = 'home.html'
 
     def __init__(self, *args, **kwargs):
@@ -33,6 +34,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
         )
 
     def get_context_data(self, **kwargs):
+        """Data prep for displaying charts"""
         context = super().get_context_data(**kwargs)
         date_limit = timezone.now() - timezone.timedelta(days=5*365)
 
@@ -50,16 +52,24 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    """Universal UpdateView for all basic models"""
     template_name = "common_edit.html"
-    success_message = '%(name)s updated successfully'
 
     def __init__(self, *args, **kwargs):
+        """
+        Gets model from urls.py
+        Args:
+            **kwargs (): model: Django model
+        """
         super(CommonUpdateView, self).__init__(*args, **kwargs)
         if self.model == Set:
             self.form_class = SetForm
         else:
             self.form_class = modelform_init(self.model)
         self.text = self.model.__name__.lower()
+
+    def get_success_message(self, cleaned_data):
+        return f'{self.object} updated successfully'
 
     def get_success_url(self):
         return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
@@ -71,11 +81,17 @@ class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
 
 
 class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterView, FormView):
+    """Main ListView class, also used for creation instead of CreateView"""
     template_name = 'common_list.html'
     paginate_by = 20
     ordering = 'name'
 
     def __init__(self, *args, **kwargs):
+        """
+        Gets model from urls.py
+        Args:
+            **kwargs (): model: Django model
+        """
         super(CommonListView, self).__init__(*args, **kwargs)
         self.text = self.model.__name__.lower()
         self.form_class = modelform_init(self.model)
@@ -86,7 +102,7 @@ class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterVi
 
     def form_valid(self, form):
         obj = form.save()
-        messages.success(self.request, f'"{obj}" created successfully')
+        messages.success(self.request, f'{obj} created successfully')
         return super(CommonListView, self).form_valid(form)
 
     def get_success_url(self):
@@ -98,23 +114,33 @@ class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterVi
         return context
 
     def get_table(self, **kwargs):
+        """Pass request to django-tables2 for getting query string, see tables.table_factory"""
         table = self.table_class(data=self.get_table_data(), request=self.request, **kwargs)
         table.request = self.request
         return RequestConfig(self.request, paginate=self.get_table_pagination(table)).configure(table)
 
 
 class CommonDeleteView(LoginRequiredMixin, DeleteView):
+    """Universal UpdateView for all models"""
     template_name = 'common_delete.html'
 
     def __init__(self, *args, **kwargs):
+        """
+        Gets model from urls.py
+        Args:
+            **kwargs (): model: Django model
+        """
         super(CommonDeleteView, self).__init__(*args, **kwargs)
         self.success_url = reverse_lazy(self.model.__name__.lower())
+
+    def get_success_url(self):
+        return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
 
     def form_valid(self, *args, **kwargs):
         obj = self.get_object()
         try:
             super(CommonDeleteView, self).delete(*args, **kwargs)
-            messages.success(self.request, f'"{obj}" deleted successfully')
+            messages.success(self.request, f'{obj} deleted successfully')
         except (ProtectedError, RestrictedError) as e:
             messages.error(self.request, e.args[0])
         return redirect(self.success_url)
@@ -164,8 +190,8 @@ class SetListView(CommonListView):
             copy_items = [SetItem(set=_set, item=item.item, amount=item.amount, tray=item.tray) for item in prev_items]
             SetItem.objects.bulk_create(copy_items)
 
-        self.success_url = reverse('item')
-        return super().form_valid(form)
+        super().form_valid(form)
+        return redirect(reverse_lazy('set_edit', kwargs={'pk': _set.pk}))
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -185,13 +211,14 @@ class SetDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sets'] = [self.get_object()]
+        obj = self.get_object()
+        context['sets'] = [obj]
         _dict = defaultdict(list)
-        items = SetItem.objects.filter(set=self.get_object()).select_related('item')
+        items = SetItem.objects.filter(set=obj).select_related('item')
         for i in items:
             _dict[i.tray].append(i)
         context['set_items'] = {context['sets'][0].serial: _dict}
-        context['order'] = Order.objects.filter(sets=context['sets'][0]).order_by('-date').first()
+        context['order'] = Order.objects.select_related().filter(sets=context['sets'][0]).order_by('-date').first()
         return context
 
 
@@ -199,7 +226,6 @@ class SetUpdateView(LoginRequiredMixin, UpdateView):
     model = Set
     template_name = 'set_edit.html'
     form_class = SetForm
-    success_url = reverse_lazy('set')
 
     def get(self, request, *args, **kwargs):
         _set = Set.objects.get(serial=self.get_object())
@@ -218,6 +244,7 @@ class SetUpdateView(LoginRequiredMixin, UpdateView):
         if formset.is_valid():
             formset.save()
 
+        messages.success(self.request, f'Set updated')
         form = SetForm(instance=_set)
         formset = set_item_formset(instance=_set)
         return render(request, self.template_name, {'formset': formset, 'form': form})
@@ -234,6 +261,12 @@ class OrderListView(CommonListView):
         self.table_class = OrderTable
         self.form_class = OrderForm
 
+    def form_valid(self, form):
+        obj = form.save()
+        messages.success(self.request, f'Order №{obj} created successfully')
+        super(OrderListView, self).form_valid(form)
+        return redirect(reverse_lazy('order_edit', kwargs={'pk': obj.pk}))
+
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.select_related('distributor', 'recipient', 'city')
@@ -247,7 +280,8 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sets'] = self.get_object().sets.all()
+        obj = self.get_object()
+        context['sets'] = obj.sets.all().select_related().prefetch_related()
         sets_items = dict()
         for i in context['sets']:
             _dict = defaultdict(list)
@@ -269,6 +303,9 @@ class OrderUpdateView(CommonUpdateView):
         self.form_class = OrderForm
         self.text = self.model.__name__.lower()
         self.success_url = reverse_lazy(self.text)
+
+    def get_success_message(self, cleaned_data):
+        return f'Order {self.object} updated successfully'
 
 
 class IncompleteSetView(LoginRequiredMixin, ListView):

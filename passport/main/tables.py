@@ -21,12 +21,25 @@ class BaseMeta:
 
 
 def table_factory(_model):
+    """
+    Create base table class with extra columns (view, edit, delete links)
+    Args:
+        _model (Model): Django model
+
+    Returns:
+        tables.Table
+    """
     class Table(tables.Table):
         view = MetaColumn()
         edit = MetaColumn()
         dlt = MetaColumn()
 
         def __init__(self, *args, **kwargs):
+            """
+            Get request from CommonListView to make urls with query string
+            Args:
+                **kwargs (): request
+            """
             self.request = kwargs.pop("request")
             super().__init__(*args, **kwargs)
             self.q_str = self.request.GET.urlencode()

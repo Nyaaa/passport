@@ -11,8 +11,8 @@
   <h1>Incomplete sets</h1>
   <hr>
   {% for set in set_list %}
-  <table class="table table-striped table-sm caption-top">
-    <caption>{{ set.grouper }}</caption>
+  <table class="table table-striped table-sm caption-top" style="break-inside:avoid">
+    <caption class="text-center"><a href="{% url 'set_edit' pk=set.grouper %}">{{ set.grouper }}</a></caption>
     <thead>
       <tr>
         <th>Item</th>

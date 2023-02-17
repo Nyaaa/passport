@@ -18,7 +18,6 @@ To fill database with auto-generated sample data, run:
 ## TODO:
 * implement analytics
 * change filter date picker to range
-* add page breaks for printing
 * add tests
 * export for detail views?
 * images?

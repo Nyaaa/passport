@@ -43,7 +43,7 @@ class Set(models.Model):
         return f'{self.serial}'
 
     def get_absolute_url(self):
-        return reverse('set_edit', args=[self.pk])
+        return reverse('set_detail', args=[self.pk])
 
 
 class Distributor(models.Model):
@@ -92,4 +92,4 @@ class Order(models.Model):
         return f'{self.pk}'
 
     def get_absolute_url(self):
-        return reverse('order_edit', args=[self.pk])
+        return reverse('order_detail', args=[self.pk])
