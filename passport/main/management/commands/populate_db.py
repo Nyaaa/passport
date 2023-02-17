@@ -20,9 +20,7 @@ class Command(BaseCommand):
         lst = []
 
         City.objects.bulk_create([City(name=fake.city()) for _ in range(20)], ignore_conflicts=True)
-        Distributor.objects.create(name='Warehouse')
         Distributor.objects.bulk_create([Distributor(name=fake.company()) for _ in range(20)], ignore_conflicts=True)
-        Recipient.objects.bulk_create([Recipient(name='98'), Recipient(name='93')])
         Recipient.objects.bulk_create([Recipient(name=fake.company()) for _ in range(20)], ignore_conflicts=True)
         Series.objects.bulk_create([Series(name=fake.safe_color_name()) for _ in range(20)], ignore_conflicts=True)
         Item.objects.bulk_create(self.gen_items(items, True), ignore_conflicts=True)
@@ -63,14 +61,14 @@ class Command(BaseCommand):
 
     @staticmethod
     def gen_orders(orders) -> list[Order]:
-        recip = Recipient.objects.filter(name__in=('93', '98')).order_by('name')
+        recip = Recipient.objects.filter(pk__in=(1, 2)).order_by('-pk')
         bulk_list = []
         for _ in range(orders):
             distributor = random.choice(Distributor.objects.all())
-            if distributor.name == 'Warehouse':
+            if distributor.pk == 1:
                 recipient = random.choices(recip, weights=(20, 10))[0]
             else:
-                recipient = random.choice(Recipient.objects.exclude(name__in=['93', '98']))
+                recipient = random.choice(Recipient.objects.exclude(pk__in=(1, 2)))
 
             bulk_list.append(Order(date=fake.date_time_this_decade(tzinfo=timezone.utc),
                                    distributor=distributor,

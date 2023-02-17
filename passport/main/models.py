@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.db.models import ProtectedError
 
 
 # Create your models here.
@@ -51,12 +52,24 @@ class Distributor(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+    def delete(self, *args, **kwargs):
+        if self.pk == 1:
+            raise ProtectedError('This is a system object', self)
+        else:
+            super(Distributor, self).delete(*args, **kwargs)
+
 
 class Recipient(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return f'{self.name}'
+
+    def delete(self, *args, **kwargs):
+        if self.pk in (1, 2):
+            raise ProtectedError('This is a system object', self)
+        else:
+            super(Recipient, self).delete(*args, **kwargs)
 
 
 class City(models.Model):

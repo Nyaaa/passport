@@ -2,10 +2,9 @@
 {% load bootstrap5 %}
 {% load custom_filters %}
 
-{% block title %}Edit{% endblock title %}
+{% block title %}Incomplete sets{% endblock title %}
 
 {% block content %}
-{% bootstrap_messages %}
 {% regroup object_list by set as set_list %}
 
 <div class="text-center">

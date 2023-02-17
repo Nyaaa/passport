@@ -5,7 +5,6 @@
 {% block title %}Edit set{% endblock title %}
 
 {% block content %}
-{% bootstrap_messages %}
 
 <div>
   <form  id="form_set" method="POST">
@@ -15,15 +14,17 @@
     <div>
       {% bootstrap_form form %}
     </div>
-    <table>
+    <table aria-labelledby="Set items">
       <thead>
-        {% for field in formset.forms.0 %}
-        {% if field.label and not field.is_hidden %}
-        <th>
-          {{ field.label }}
-        </th>
-        {% endif %}
-        {% endfor %}
+        <tr>
+          {% for field in formset.forms.0 %}
+          {% if field.label and not field.is_hidden %}
+          <th>
+            {{ field.label }}
+          </th>
+          {% endif %}
+          {% endfor %}
+        </tr>
       </thead>
       {% for form in formset.forms %}
       <tr>

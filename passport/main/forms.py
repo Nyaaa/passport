@@ -22,7 +22,7 @@ def modelform_init(_model):
 
         def clean(self):
             cleaned_data = super().clean()
-            cleaned_data['name'] = cleaned_data['name'].strip().capitalize()
+            cleaned_data['name'] = ' '.join(cleaned_data['name'].split())
             if cleaned_data.get('article'):
                 cleaned_data['article'] = cleaned_data['article'].strip().upper()
             return cleaned_data

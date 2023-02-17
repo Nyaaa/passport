@@ -8,14 +8,15 @@ from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
 from django_tables2 import RequestConfig
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy
 from collections import defaultdict
-from django.db.models import OuterRef, Subquery, Count
+from django.db.models import OuterRef, Subquery, Count, ProtectedError, RestrictedError
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.db.models.functions import TruncYear
 from django.utils import timezone
+from django.contrib import messages
 
 
 # Create your views here.
@@ -38,11 +39,11 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context['distributor_sets_chart'] = self.qs.values('distributor').order_by('distributor')\
             .annotate(count=Count('serial')).values('distributor', 'count')
 
-        context['shipments_by_year'] = Order.objects.exclude(distributor__name='Warehouse')\
+        context['shipments_by_year'] = Order.objects.exclude(distributor__pk=1)\
             .annotate(year=TruncYear('date')).values('year').annotate(count=Count('date'))\
             .values('year', 'count').filter(year__gt=date_limit)
 
-        context['returns'] = Order.objects.filter(distributor__name='Warehouse')\
+        context['returns'] = Order.objects.filter(distributor__pk=1)\
             .annotate(year=TruncYear('date')).values('year').annotate(count=Count('date'))\
             .values('year', 'count').filter(year__gt=date_limit)
         return context
@@ -117,6 +118,15 @@ class CommonDelete(LoginRequiredMixin, DeleteView):
         super(CommonDelete, self).__init__(*args, **kwargs)
         self.success_url = reverse_lazy(self.model.__name__.lower())
 
+    def form_valid(self, *args, **kwargs):
+        obj = self.get_object()
+        try:
+            super(CommonDelete, self).delete(*args, **kwargs)
+            messages.success(self.request, f'"{obj}" deleted successfully')
+        except (ProtectedError, RestrictedError) as e:
+            messages.error(self.request, e.args[0])
+        return redirect(self.success_url)
+
 
 class ItemListView(CommonListView):
     model = Item
@@ -169,6 +179,7 @@ class SetListView(CommonListView):
             copy_items = [SetItem(set=_set, item=item.item, amount=item.amount, tray=item.tray) for item in prev_items]
             SetItem.objects.bulk_create(copy_items)
 
+        self.success_url = _set.get_absolute_url()
         return super().form_valid(form)
 
     def get_queryset(self):
@@ -288,7 +299,7 @@ class IncompleteSetView(LoginRequiredMixin, ListView):
         qs = super().get_queryset()
         latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
         sets = qs.prefetch_related('order_set').annotate(
-            recipient=Subquery(latest_order.values('recipient__name'))).filter(recipient='98')
+            recipient=Subquery(latest_order.values('recipient__pk'))).filter(recipient=1)
         qs = SetItem.objects.select_related().filter(set__in=sets).values('item', 'amount', 'comment', 'set')
 
         return qs

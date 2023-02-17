@@ -17,14 +17,14 @@ class BaseMeta:
     model = None
     template_name = 'django_tables2/bootstrap5.html'
     attrs = {'class': 'table table-striped'}
-    sequence = ('...', 'view', 'edit', 'delete')
+    sequence = ('...', 'view', 'edit', 'dlt')
 
 
 def table_factory(_model):
     class Table(tables.Table):
         view = MetaColumn()
         edit = MetaColumn()
-        delete = MetaColumn()
+        dlt = MetaColumn()
 
         def __init__(self, *args, **kwargs):
             self.request = kwargs.pop("request")
@@ -35,7 +35,7 @@ def table_factory(_model):
             return format_html(f'<a href="{record.pk}/edit/?{self.q_str}">'
                                '<i class="fa-regular fa-pen-to-square"></i></a>')
 
-        def render_delete(self, record):
+        def render_dlt(self, record):
             return format_html(f'<a href="{record.pk}/delete/?{self.q_str}">'
                                '<i class="fa-regular fa-trash-can"></i></a>')
 

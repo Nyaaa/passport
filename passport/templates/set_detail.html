@@ -2,10 +2,9 @@
 {% load bootstrap5 %}
 {% load custom_filters %}
 
-{% block title %}Edit{% endblock title %}
+{% block title %}{{ set.serial }}{% endblock title %}
 
 {% block content %}
-{% bootstrap_messages %}
 <div>
   {% for set in sets %}
   <hr>
