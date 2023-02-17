@@ -2,7 +2,13 @@
 {% load bootstrap5 %}
 {% load custom_filters %}
 
-{% block title %}{{ set.serial }}{% endblock title %}
+{% block title %}
+  {% if set.serial %}
+    Set {{ set.serial }}
+  {% else %}
+    Order №{{ order }}
+  {% endif %}
+{% endblock title %}
 
 {% block content %}
 <div>
@@ -11,12 +17,14 @@
   <div>
     <table class="table table-info table-striped" aria-describedby="Set info for {{ set.serial }}">
       <thead>
-      <th>Set</th>
-      <th>S/N</th>
-      <th>Distributor</th>
-      <th>Recipient</th>
-      <th>City</th>
-      <th>Date</th>
+        <tr>
+          <th>Set</th>
+          <th>S/N</th>
+          <th>Distributor</th>
+          <th>Recipient</th>
+          <th>City</th>
+          <th>Date</th>
+        </tr>
       </thead>
       <tr>
         <td>{{ set.article }}</td>
@@ -37,10 +45,12 @@
         <caption>Tray №{{ tray }}</caption>
       {% endif %}
       <thead>
-        <th>№</th>
-        <th>Article</th>
-        <th>Name</th>
-        <th>Amount</th>
+        <tr>
+          <th>№</th>
+          <th>Article</th>
+          <th>Name</th>
+          <th>Amount</th>
+        </tr>
       </thead>
       {% for setitem in set_items|get_values:set.serial|get_values:tray %}
       <tr>

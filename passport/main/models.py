@@ -88,5 +88,8 @@ class Order(models.Model):
     sets = models.ManyToManyField(Set)
     comment = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f'{self.pk}'
+
     def get_absolute_url(self):
         return reverse('order_edit', args=[self.pk])

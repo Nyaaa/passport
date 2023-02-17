@@ -3,7 +3,11 @@
 {% block title %}Sign in{% endblock title %}
 {% block content %}
 <div class="d-flex container min-vh-100 align-items-center justify-content-center text-center">
+  {% if next %}
+  <form method="post" action="{% url 'login' %}?next={{next}}">
+  {%else%}
   <form method="post" action="{% url 'login' %}">
+  {% endif %}
     <h2>Log in</h2>
     {% csrf_token %}
     {% bootstrap_form form %}

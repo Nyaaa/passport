@@ -1,4 +1,5 @@
-from django.views.generic import UpdateView, DeleteView, TemplateView, DetailView, FormView, ListView
+from django.views.generic import UpdateView, DeleteView, TemplateView,\
+    DetailView, FormView, ListView
 from .models import Item, Set, SetItem, Order
 from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
@@ -12,11 +13,10 @@ from django.shortcuts import render, redirect, reverse
 from django.urls import reverse_lazy
 from collections import defaultdict
 from django.db.models import OuterRef, Subquery, Count, ProtectedError, RestrictedError
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django.db.models.functions import TruncYear
 from django.utils import timezone
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 
 
 # Create your views here.
@@ -49,40 +49,24 @@ class HomeView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class CreateUpdateView(
-    LoginRequiredMixin, SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView
-):
+class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     template_name = "common_edit.html"
+    success_message = '%(name)s updated successfully'
 
     def __init__(self, *args, **kwargs):
-        super(CreateUpdateView, self).__init__(*args, **kwargs)
+        super(CommonUpdateView, self).__init__(*args, **kwargs)
         if self.model == Set:
             self.form_class = SetForm
         else:
             self.form_class = modelform_init(self.model)
         self.text = self.model.__name__.lower()
 
-    def get_object(self, queryset=None):
-        try:
-            return super(CreateUpdateView, self).get_object(queryset)
-        except AttributeError:
-            return None
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(CreateUpdateView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.success_url = f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
-        return super(CreateUpdateView, self).post(request, *args, **kwargs)
+    def get_success_url(self):
+        return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.object:
-            context['title'] = f'Edit {self.text}'
-        else:
-            context['title'] = f'Create {self.text}'
+        context['title'] = f'Edit {self.text}'
         return context
 
 
@@ -93,16 +77,24 @@ class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterVi
 
     def __init__(self, *args, **kwargs):
         super(CommonListView, self).__init__(*args, **kwargs)
-        self.name = self.model.__name__.lower()
+        self.text = self.model.__name__.lower()
         self.form_class = modelform_init(self.model)
         self.table_class = table_factory(self.model)
         self.filterset_class = filter_factory(self.model)
         self.form_class = modelform_init(self.model)
+        self.object_list = self.get_queryset()
+
+    def form_valid(self, form):
+        obj = form.save()
+        messages.success(self.request, f'"{obj}" created successfully')
+        return super(CommonListView, self).form_valid(form)
+
+    def get_success_url(self):
+        return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = f'{self.model.__name__}'
-        context['create_url'] = f'{self.name}_create'
         return context
 
     def get_table(self, **kwargs):
@@ -111,17 +103,17 @@ class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterVi
         return RequestConfig(self.request, paginate=self.get_table_pagination(table)).configure(table)
 
 
-class CommonDelete(LoginRequiredMixin, DeleteView):
+class CommonDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'common_delete.html'
 
     def __init__(self, *args, **kwargs):
-        super(CommonDelete, self).__init__(*args, **kwargs)
+        super(CommonDeleteView, self).__init__(*args, **kwargs)
         self.success_url = reverse_lazy(self.model.__name__.lower())
 
     def form_valid(self, *args, **kwargs):
         obj = self.get_object()
         try:
-            super(CommonDelete, self).delete(*args, **kwargs)
+            super(CommonDeleteView, self).delete(*args, **kwargs)
             messages.success(self.request, f'"{obj}" deleted successfully')
         except (ProtectedError, RestrictedError) as e:
             messages.error(self.request, e.args[0])
@@ -151,13 +143,6 @@ class SetListView(CommonListView):
         self.filterset_class = SetFilter
         self.table_class = SetTable
         self.form_class = SetBasicForm
-        self.success_url = reverse_lazy('set')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = f'{self.model.__name__}'
-        context['create_url'] = f'{self.name}'
-        return context
 
     def form_valid(self, form):
         _set = form.save(commit=False)
@@ -179,7 +164,7 @@ class SetListView(CommonListView):
             copy_items = [SetItem(set=_set, item=item.item, amount=item.amount, tray=item.tray) for item in prev_items]
             SetItem.objects.bulk_create(copy_items)
 
-        self.success_url = _set.get_absolute_url()
+        self.success_url = reverse('item')
         return super().form_valid(form)
 
     def get_queryset(self):
@@ -249,11 +234,6 @@ class OrderListView(CommonListView):
         self.table_class = OrderTable
         self.form_class = OrderForm
 
-    def form_valid(self, form):
-        _order = form.save(commit=False)
-        response = super().form_valid(form)
-        return response
-
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.select_related('distributor', 'recipient', 'city')
@@ -280,7 +260,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class OrderUpdateView(CreateUpdateView):
+class OrderUpdateView(CommonUpdateView):
     model = Order
     template_name = 'common_edit.html'
 

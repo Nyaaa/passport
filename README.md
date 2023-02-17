@@ -16,7 +16,6 @@ To fill database with auto-generated sample data, run:
 `python .\manage.py populate_db`
 
 ## TODO:
-* add success messages
 * implement analytics
 * change filter date picker to range
 * add page breaks for printing
