@@ -9,7 +9,7 @@ from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
 from django_tables2 import RequestConfig
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from collections import defaultdict
 from django.db.models import OuterRef, Subquery, Count, ProtectedError, RestrictedError
@@ -77,6 +77,7 @@ class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = f'Edit {self.text}'
+        context['delete_view'] = reverse_lazy(f'{self.text}_delete', kwargs={'pk': self.object.pk})
         return context
 
 
@@ -131,10 +132,9 @@ class CommonDeleteView(LoginRequiredMixin, DeleteView):
             **kwargs (): model: Django model
         """
         super(CommonDeleteView, self).__init__(*args, **kwargs)
-        self.success_url = reverse_lazy(self.model.__name__.lower())
 
     def get_success_url(self):
-        return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
+        return reverse_lazy(self.model.__name__.lower()) + '?' + self.request.GET.urlencode()
 
     def form_valid(self, *args, **kwargs):
         obj = self.get_object()
@@ -143,7 +143,7 @@ class CommonDeleteView(LoginRequiredMixin, DeleteView):
             messages.success(self.request, f'{obj} deleted successfully')
         except (ProtectedError, RestrictedError) as e:
             messages.error(self.request, e.args[0])
-        return redirect(self.success_url)
+        return redirect(self.get_success_url())
 
 
 class ItemListView(CommonListView):
@@ -191,7 +191,7 @@ class SetListView(CommonListView):
             SetItem.objects.bulk_create(copy_items)
 
         super().form_valid(form)
-        return redirect(reverse_lazy('set_edit', kwargs={'pk': _set.pk}))
+        return redirect(reverse_lazy('set_detail', kwargs={'pk': _set.pk}))
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -222,32 +222,27 @@ class SetDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SetUpdateView(LoginRequiredMixin, UpdateView):
+class SetUpdateView(CommonUpdateView):
     model = Set
-    template_name = 'set_edit.html'
+    template_name = 'common_edit.html'
     form_class = SetForm
 
-    def get(self, request, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         _set = Set.objects.get(serial=self.get_object())
-        form = SetForm(instance=_set)
-        formset = set_item_formset(instance=_set)
-        return render(request, self.template_name, {'formset': formset, 'form': form})
+        context['formset'] = set_item_formset(instance=_set)
+        return context
 
-    def post(self, request, *args, **kwargs):
-        _set = Set.objects.get(serial=self.get_object())
-        if request.POST.get('serial'):
-            form = SetForm(request.POST, instance=_set)
-            if form.is_valid():
-                form.save()
-
-        formset = set_item_formset(request.POST, instance=_set)
+    def form_valid(self, form):
+        _set = form.save(commit=False)
+        if form.is_valid():
+            _set.save()
+        formset = set_item_formset(self.request.POST, instance=_set)
         if formset.is_valid():
             formset.save()
 
-        messages.success(self.request, f'Set updated')
-        form = SetForm(instance=_set)
-        formset = set_item_formset(instance=_set)
-        return render(request, self.template_name, {'formset': formset, 'form': form})
+        super().form_valid(form)
+        return redirect(reverse_lazy('set_edit', kwargs={'pk': _set.pk}))
 
 
 class OrderListView(CommonListView):

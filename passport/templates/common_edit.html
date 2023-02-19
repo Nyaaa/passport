@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<h1>{{ title }}</h1>
+<h1 class="text-center">{{ title }}</h1>
 
 {% if form %}
   <form action="" method="post" class="">
@@ -13,8 +13,40 @@
     {% csrf_token %}
     <div class="">
       {% bootstrap_form form layout='' %}
-      {% bootstrap_button button_type="submit" content="OK" %}
-      <a href="{{request.META.HTTP_REFERER|escape}}" class="btn btn-outline-primary">Cancel</a>
+
+      {% if formset %}
+        {{ formset.management_form }}
+        {{ formset.media }}
+
+        <table aria-labelledby="Set items">
+          <thead>
+          <tr>
+            {% for field in formset.forms.0 %}
+            {% if field.label and not field.is_hidden %}
+            <th>
+              {{ field.label }}
+            </th>
+            {% endif %}
+            {% endfor %}
+          </tr>
+          </thead>
+          {% for form in formset.forms %}
+          <tr>
+            {% for field in form %}
+            <td>
+              {{ field }}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+
+      <div class="my-3">
+        {% bootstrap_button button_type="submit" content="Save" %}
+        <a href="{{request.META.HTTP_REFERER|escape}}" class="btn btn-outline-primary">Cancel</a>
+        <a href="{{ delete_view }}?{{ request.GET.urlencode }}" class="btn btn-danger">Delete</a>
+      </div>
     </div>
   </form>
 {% endif %}

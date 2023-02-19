@@ -17,7 +17,7 @@ class BaseMeta:
     model = None
     template_name = 'django_tables2/bootstrap5.html'
     attrs = {'class': 'table table-striped'}
-    sequence = ('...', 'view', 'edit', 'dlt')
+    sequence = ('...', 'view', 'edit')
 
 
 def table_factory(_model):
@@ -32,7 +32,6 @@ def table_factory(_model):
     class Table(tables.Table):
         view = MetaColumn()
         edit = MetaColumn()
-        dlt = MetaColumn()
 
         def __init__(self, *args, **kwargs):
             """
@@ -48,10 +47,6 @@ def table_factory(_model):
             return format_html(f'<a href="{record.pk}/edit/?{self.q_str}">'
                                '<i class="fa-regular fa-pen-to-square"></i></a>')
 
-        def render_dlt(self, record):
-            return format_html(f'<a href="{record.pk}/delete/?{self.q_str}">'
-                               '<i class="fa-regular fa-trash-can"></i></a>')
-
         def render_view(self, record):
             return format_html(f'<a href="{record.pk}/?{self.q_str}">'
                                '<i class="fa-regular fa-file-lines"></i></a>')
@@ -65,8 +60,6 @@ def table_factory(_model):
 
 class SetTable(table_factory(Set)):
     view = MetaColumn()
-    edit = MetaColumn()
-    delete = MetaColumn()
     assigned_to = tables.Column(accessor='distributor')
     date = tables.DateTimeColumn(accessor='date', format='Y-m-d')
     recipient = tables.Column(accessor='recipient')
@@ -79,8 +72,6 @@ class SetTable(table_factory(Set)):
 
 class OrderTable(table_factory(Order)):
     view = MetaColumn()
-    edit = MetaColumn()
-    delete = MetaColumn()
     date = tables.DateTimeColumn(format='Y-m-d')
     sets = tables.ManyToManyColumn()
 

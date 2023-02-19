@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.db.models import ProtectedError
+from django.core.validators import MinValueValidator
 
 
 # Create your models here.
@@ -28,8 +29,8 @@ class Item(models.Model):
 class SetItem(models.Model):
     set = models.ForeignKey('Set', on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    amount = models.IntegerField(default=1)
-    tray = models.IntegerField(default=1)
+    amount = models.IntegerField(default=1, validators=[MinValueValidator(0, 'Quantity should be >= 0')])
+    tray = models.IntegerField(default=1, help_text="Select tray 0 for optional items.")
     comment = models.TextField(blank=True, null=True)
 
 
@@ -79,13 +80,18 @@ class City(models.Model):
         return f'{self.name}'
 
 
+class OrderSet(models.Model):
+    set = models.ForeignKey(Set, on_delete=models.RESTRICT)
+    order = models.ForeignKey('Order', on_delete=models.CASCADE)
+
+
 class Order(models.Model):
     date = models.DateTimeField(default=timezone.now)
     distributor = models.ForeignKey(Distributor, on_delete=models.RESTRICT)
     recipient = models.ForeignKey(Recipient, on_delete=models.RESTRICT)
     document = models.IntegerField(blank=True, null=True, unique=True)
     city = models.ForeignKey(City, on_delete=models.RESTRICT)
-    sets = models.ManyToManyField(Set)
+    sets = models.ManyToManyField(Set, through=OrderSet)
     comment = models.TextField(blank=True, null=True)
 
     def __str__(self):
