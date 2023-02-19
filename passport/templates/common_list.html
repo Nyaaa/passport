@@ -2,6 +2,7 @@
 {% load bootstrap5 %}
 {% load render_table from django_tables2 %}
 {% load export_url from django_tables2 %}
+{% load widget_tweaks %}
 
 {% block title %}{{ title }} list{% endblock title %}
 
@@ -14,7 +15,9 @@
 <form class="" action="" method="get" >
   <div class="input-group">
     <span class="input-group-text" id="basic-addon1">Items: {{ page_obj.paginator.count }}</span>
-    {% bootstrap_form filter.form layout='inline' %}
+    {% for field in filter.form %}
+      {% render_field field class="form-control" style="min-width: 100px;" placeholder=field.label %}
+    {% endfor %}
     {% bootstrap_button content='Filter' %}
     {% if filter.is_bound %}
       <a href="{% url request.resolver_match.view_name %}" class="btn btn-outline-primary">Clear filters</a>

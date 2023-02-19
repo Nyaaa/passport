@@ -60,8 +60,8 @@ def table_factory(_model):
 
 class SetTable(table_factory(Set)):
     view = MetaColumn()
-    assigned_to = tables.Column(accessor='distributor')
     date = tables.DateTimeColumn(accessor='date', format='Y-m-d')
+    distributor = tables.Column(accessor='distributor')
     recipient = tables.Column(accessor='recipient')
     city = tables.Column(accessor='city')
     document = tables.Column(accessor='document')

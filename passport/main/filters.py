@@ -1,7 +1,6 @@
-from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ChoiceFilter, DateFilter
+from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ChoiceFilter, DateFilter, NumberFilter
 from .models import Item, Set, Series, Order, Distributor, Recipient, City
 from django import forms
-from django.forms.widgets import TextInput
 from ajax_select.fields import AutoCompleteWidget
 
 
@@ -36,17 +35,16 @@ class ItemFilter(FilterSet):
 
 
 class SetFilter(FilterSet):
-    article = CharFilter(field_name='article__article', lookup_expr='icontains',
-                         widget=TextInput(attrs={'placeholder': 'Article contains'}))
+    article = CharFilter(field_name='article__article', lookup_expr='icontains', label='Article contains')
     serial = CharFilter(lookup_expr='icontains')
     comment = CharFilter(lookup_expr='icontains')
-    distributor = ModelChoiceFilter(empty_label='All distributors', queryset=Distributor.objects.all(),
+    distributor = ModelChoiceFilter(empty_label='All distributors', queryset=Distributor.objects.all().order_by('name'),
                                     method='set_order_filter')
-    recipient = ModelChoiceFilter(empty_label='All recipients', queryset=Recipient.objects.all(),
+    recipient = ModelChoiceFilter(empty_label='All recipients', queryset=Recipient.objects.all().order_by('name'),
                                   method='set_order_filter')
-    city = ModelChoiceFilter(empty_label='All cities', queryset=City.objects.all(),
+    city = ModelChoiceFilter(empty_label='All cities', queryset=City.objects.all().order_by('name'),
                              method='set_order_filter')
-    document = CharFilter(label='Document №', method='set_order_filter')
+    document = NumberFilter(label='Document', method='set_order_filter')
 
     @staticmethod
     def set_order_filter(queryset, name, value):
@@ -59,9 +57,11 @@ class SetFilter(FilterSet):
 
 class OrderFilter(FilterSet):
     date = DateFilter(lookup_expr='gt', widget=forms.DateInput(attrs={'type': 'date'}))
-    sets = ModelChoiceFilter(queryset=Set.objects.all(),
-                             widget=AutoCompleteWidget('set'))
+    sets = ModelChoiceFilter(queryset=Set.objects.all(), widget=AutoCompleteWidget('set'))
+    distributor = ModelChoiceFilter(empty_label='All distributors', queryset=Distributor.objects.all().order_by('name'))
+    recipient = ModelChoiceFilter(empty_label='All recipients', queryset=Recipient.objects.all().order_by('name'))
+    city = ModelChoiceFilter(empty_label='All cities', queryset=City.objects.all().order_by('name'))
 
     class Meta:
         model = Order
-        fields = ['date', 'distributor', 'recipient', 'document', 'city']
+        fields = ['date', 'distributor', 'recipient', 'city', 'document']

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "passport"
-version = "0.2.2"
+version = "0.3.0"
 description = "Packing list management tool"
 authors = ["Nyaaa <1457047+Nyaaa@users.noreply.github.com>"]
 readme = "README.md"
@@ -16,6 +16,7 @@ django-cachalot = "^2.5.2"
 django-ajax-selects = "^2.2.0"
 django-tables2 = "^2.5.1"
 tablib = {extras = ["ods", "xlsx"], version = "^3.3.0"}
+django-widget-tweaks = "^1.4.12"
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^3.8.1"

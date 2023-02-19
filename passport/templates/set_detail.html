@@ -54,13 +54,13 @@
     </table>
 
     <div class="text-center d-print-none">
-      <a href="{% url 'set_edit' pk=set.pk %}" role="button" class="btn btn-outline-secondary">Edit set</a>
+      <a href="{% url 'set_edit' pk=set.pk %}" role="button" class="btn btn-outline-primary">Edit set</a>
       {% if 'order' in request.path %}
-      <a href="{% url 'set_detail' pk=set.pk %}" role="button" class="btn btn-outline-secondary">View set</a>
-      <a href="{% url 'order_edit' pk=order.pk %}" role="button" class="btn btn-outline-secondary">Edit order</a>
+      <a href="{% url 'set_detail' pk=set.pk %}" role="button" class="btn btn-outline-primary">View set</a>
+      <a href="{% url 'order_edit' pk=order.pk %}" role="button" class="btn btn-outline-primary">Edit order</a>
       {% else %}
         {% if order %}
-        <a href="{% url 'order_detail' pk=order.pk %}" role="button" class="btn btn-outline-secondary">View order</a>
+        <a href="{% url 'order_detail' pk=order.pk %}" role="button" class="btn btn-outline-primary">View order</a>
         {% endif %}
       {% endif %}
     </div>
