@@ -24,7 +24,7 @@
     <tr>
       <td>{{ item.item }}</td>
       <td>{{ item.amount }}</td>
-      <td>{{ item.comment }}</td>
+      <td>{% if item.comment %}{{ item.comment }}{% else %}—{% endif %}</td>
     </tr>
     {% endfor %}
   </table>

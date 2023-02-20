@@ -24,21 +24,18 @@ class HomeView(LoginRequiredMixin, TemplateView):
     """Dashboard / home page"""
     template_name = 'home.html'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        qs = Set.objects.all()
-        latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
-        self.qs = qs.prefetch_related('order_set').annotate(
-            distributor=Subquery(latest_order.values('distributor__name')),
-            date=Subquery(latest_order.values('date')),
-        )
-
     def get_context_data(self, **kwargs):
         """Data prep for displaying charts"""
         context = super().get_context_data(**kwargs)
         date_limit = timezone.now() - timezone.timedelta(days=5*365)
+        qs = Set.objects.all()
+        latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
+        qs = qs.prefetch_related('order_set').annotate(
+            distributor=Subquery(latest_order.values('distributor__name')),
+            date=Subquery(latest_order.values('date')),
+        )
 
-        context['distributor_sets_chart'] = self.qs.values('distributor').order_by('distributor')\
+        context['distributor_sets_chart'] = qs.values('distributor').order_by('distributor')\
             .annotate(count=Count('serial')).values('distributor', 'count')
 
         context['shipments_by_year'] = Order.objects.exclude(distributor__pk=1)\
@@ -62,10 +59,7 @@ class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
             **kwargs (): model: Django model
         """
         super(CommonUpdateView, self).__init__(*args, **kwargs)
-        if self.model == Set:
-            self.form_class = SetForm
-        else:
-            self.form_class = modelform_init(self.model)
+        self.form_class = modelform_init(self.model)
         self.text = self.model.__name__.lower()
 
     def get_success_message(self, cleaned_data):
@@ -198,8 +192,10 @@ class SetListView(CommonListView):
             copy_items = [SetItem(set=_set, item=item.item, amount=item.amount, tray=item.tray) for item in prev_items]
             SetItem.objects.bulk_create(copy_items)
 
-        super().form_valid(form)
-        return redirect(reverse_lazy('set_detail', kwargs={'pk': _set.pk}))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('set_detail', kwargs={'pk': self.object.pk})
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -233,7 +229,10 @@ class SetDetailView(LoginRequiredMixin, DetailView):
 class SetUpdateView(CommonUpdateView):
     model = Set
     template_name = 'common_edit.html'
-    form_class = SetForm
+
+    def __init__(self, *args, **kwargs):
+        super(SetUpdateView, self).__init__(*args, **kwargs)
+        self.form_class = SetForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -249,8 +248,10 @@ class SetUpdateView(CommonUpdateView):
         if formset.is_valid():
             formset.save()
 
-        super().form_valid(form)
-        return redirect(reverse_lazy('set_edit', kwargs={'pk': _set.pk}))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('set_edit', kwargs={'pk': self.object.pk})
 
 
 class OrderListView(CommonListView):
