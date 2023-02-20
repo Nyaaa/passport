@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.db.models import ProtectedError
 from django.core.validators import MinValueValidator
+import uuid
 
 
 # Create your models here.
@@ -12,12 +13,26 @@ class Series(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+    class Meta:
+        verbose_name_plural = "series"
+
+
+def item_img_path(instance, filename):
+    ext = filename.split('.')[-1].lower()
+    if instance.pk:
+        filename = f'item_img/{instance.pk}.{ext}'
+    else:
+        # adding just in case, this should never trigger
+        filename = f'item_img/{uuid.uuid4()}.{ext}'
+    return filename
+
 
 class Item(models.Model):
     article = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=255)
     series = models.ForeignKey(Series, on_delete=models.RESTRICT, blank=True, null=True, default=None)
     is_set = models.BooleanField(default=False)
+    image = models.ImageField(upload_to=item_img_path, blank=True, null=True)
 
     def __str__(self):
         return f'{self.article}'
@@ -28,7 +43,7 @@ class Item(models.Model):
 
 class SetItem(models.Model):
     set = models.ForeignKey('Set', on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.RESTRICT)
     amount = models.IntegerField(default=1, validators=[MinValueValidator(0, 'Quantity should be >= 0')])
     tray = models.IntegerField(default=1, help_text="Select tray 0 for optional items.")
     comment = models.TextField(blank=True, null=True)
@@ -78,6 +93,9 @@ class City(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+    class Meta:
+        verbose_name_plural = "cities"
 
 
 class OrderSet(models.Model):

@@ -14,11 +14,12 @@ set_item_formset = forms.inlineformset_factory(
              })
 
 
-def modelform_init(_model):
+def modelform_init(_model, _fields='__all__'):
     """
-    Create universal forms for basic models
+    Create universal forms for basic models.
     Args:
         _model (): Django model
+        _fields (list[str]): Optional, list of fields to display, default: all
 
     Returns:
         form(ModelForm)
@@ -26,7 +27,7 @@ def modelform_init(_model):
     class BasicForm(forms.ModelForm):
         class Meta:
             model = _model
-            fields = '__all__'
+            fields = _fields
 
         def clean(self):
             cleaned_data = super().clean()

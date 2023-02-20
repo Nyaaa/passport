@@ -8,7 +8,7 @@
 <h1 class="text-center">{{ title }}</h1>
 
 {% if form %}
-  <form action="" method="post" class="">
+  <form action="" method="post" class="" enctype="multipart/form-data">
     {{ form.media }}
     {% csrf_token %}
     <div class="">

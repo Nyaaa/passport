@@ -17,6 +17,7 @@ django-ajax-selects = "^2.2.0"
 django-tables2 = "^2.5.1"
 tablib = {extras = ["ods", "xlsx"], version = "^3.3.0"}
 django-widget-tweaks = "^1.4.12"
+pillow = "^9.4.0"
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^3.8.1"

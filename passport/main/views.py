@@ -81,7 +81,7 @@ class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
         return context
 
 
-class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterView, FormView):
+class CommonListView(SuccessMessageMixin, LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterView, FormView):
     """Main ListView class, also used for creation instead of CreateView"""
     template_name = 'common_list.html'
     paginate_by = 20
@@ -100,14 +100,18 @@ class CommonListView(LoginRequiredMixin, ExportMixin, SingleTableMixin, FilterVi
         self.filterset_class = filter_factory(self.model)
         self.form_class = modelform_init(self.model)
         self.object_list = self.get_queryset()
+        self.object = None
 
     def form_valid(self, form):
-        obj = form.save()
-        messages.success(self.request, f'{obj} created successfully')
+        """Creates new objects in lieu of CreateView"""
+        self.object = form.save()
         return super(CommonListView, self).form_valid(form)
 
     def get_success_url(self):
         return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
+
+    def get_success_message(self, cleaned_data):
+        return f'{self.object} created successfully'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -153,11 +157,15 @@ class ItemListView(CommonListView):
     def __init__(self, *args, **kwargs):
         super(ItemListView, self).__init__(*args, **kwargs)
         self.filterset_class = ItemFilter
+        self.form_class = modelform_init(Item, ['article', 'name'])
 
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.select_related('series')
         return qs
+
+    def get_success_url(self):
+        return f'{self.object.get_absolute_url()}?{self.request.GET.urlencode()}'
 
 
 class SetListView(CommonListView):
@@ -256,11 +264,11 @@ class OrderListView(CommonListView):
         self.table_class = OrderTable
         self.form_class = OrderForm
 
-    def form_valid(self, form):
-        obj = form.save()
-        messages.success(self.request, f'Order №{obj} created successfully')
-        super(OrderListView, self).form_valid(form)
-        return redirect(reverse_lazy('order_edit', kwargs={'pk': obj.pk}))
+    def get_success_url(self):
+        return reverse_lazy('order_detail', kwargs={'pk': self.object.pk})
+
+    def get_success_message(self, cleaned_data):
+        return f'Order №{self.object} created successfully'
 
     def get_queryset(self):
         qs = super().get_queryset()
