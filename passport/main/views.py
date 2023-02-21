@@ -275,7 +275,7 @@ class OrderListView(CommonListView):
         return redirect(reverse_lazy('order_create'))
 
 
-class OrderCreateView(SuccessMessageMixin, CreateView):
+class OrderCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Order
     template_name = 'common_edit.html'
     form_class = OrderForm
@@ -285,6 +285,11 @@ class OrderCreateView(SuccessMessageMixin, CreateView):
 
     def get_success_message(self, _):
         return f'Order №{self.object} created successfully'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Create new order:'
+        return context
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):

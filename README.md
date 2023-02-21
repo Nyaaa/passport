@@ -15,7 +15,11 @@ To fill database with auto-generated sample data, run:
 
 `python .\manage.py populate_db`
 
-## TODO:
+## ERD
+
+![ERD](docs/ERD.png)
+
+## TODO
 * implement analytics
 * change filter date picker to range
 * add tests
