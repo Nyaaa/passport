@@ -1,9 +1,9 @@
 from django.views.generic import UpdateView, DeleteView, TemplateView,\
-    DetailView, FormView, ListView
+    DetailView, FormView, ListView, CreateView
 from .models import Item, Set, SetItem, Order
 from .tables import SetTable, table_factory, OrderTable
 from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
-from .forms import SetForm, SetBasicForm, modelform_init, OrderForm, set_item_formset
+from .forms import SetForm, SetBasicForm, modelform_init, OrderForm, set_item_formset, OrderBasicForm
 from django_filters.views import FilterView
 from django_tables2.views import SingleTableMixin
 from django_tables2.export.views import ExportMixin
@@ -263,19 +263,28 @@ class OrderListView(CommonListView):
         self.filterset_class = OrderFilter
         self.object_list = self.model.objects.all()
         self.table_class = OrderTable
-        self.form_class = OrderForm
-
-    def get_success_url(self):
-        return reverse_lazy('order_detail', kwargs={'pk': self.object.pk})
-
-    def get_success_message(self, cleaned_data):
-        return f'Order №{self.object} created successfully'
+        self.form_class = OrderBasicForm
 
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.select_related('distributor', 'recipient', 'city')
         qs = qs.prefetch_related('sets')
         return qs
+
+    def form_valid(self, form):
+        return redirect(reverse_lazy('order_create'))
+
+
+class OrderCreateView(SuccessMessageMixin, CreateView):
+    model = Order
+    template_name = 'common_edit.html'
+    form_class = OrderForm
+
+    def get_success_url(self):
+        return reverse_lazy('order_detail', kwargs={'pk': self.object.pk})
+
+    def get_success_message(self, cleaned_data):
+        return f'Order №{self.object} created successfully'
 
 
 class OrderDetailView(LoginRequiredMixin, DetailView):

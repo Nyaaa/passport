@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "passport"
-version = "0.3.0"
+version = "0.3.1"
 description = "Packing list management tool"
 authors = ["Nyaaa <1457047+Nyaaa@users.noreply.github.com>"]
 readme = "README.md"

@@ -75,3 +75,9 @@ class OrderForm(forms.ModelForm):
             'city': AutoCompleteSelectWidget('city'),
             'sets': AutoCompleteSelectMultipleWidget('set'),
         }
+
+
+class OrderBasicForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        exclude = ['distributor', 'recipient', 'city', 'sets', 'date', 'comment', 'document']

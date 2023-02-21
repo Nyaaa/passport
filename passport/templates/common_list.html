@@ -14,7 +14,7 @@
 {% if filter %}
 <form class="" action="" method="get" >
   <div class="input-group">
-    <span class="input-group-text" id="basic-addon1">Items: {{ page_obj.paginator.count }}</span>
+    <span class="input-group-text" id="counter-label">Items: {{ page_obj.paginator.count }}</span>
     {% for field in filter.form %}
       {% render_field field class="form-control" style="min-width: 100px;" placeholder=field.label %}
     {% endfor %}
@@ -41,10 +41,13 @@
     {{ form.media }}
     {% csrf_token %}
 
-      <h3>Create new {{ title.lower }}:</h3>
-      {% bootstrap_form form layout='' %}
-      {% bootstrap_button button_type="submit" content="OK" %}
-
+    <div class="input-group">
+      <span class="input-group-text" id="create-label">New {{ title.lower }}:</span>
+      {% for field in form %}
+      {% render_field field class="form-control" style="min-width: 100px;" placeholder=field.label %}
+      {% endfor %}
+      {% bootstrap_button button_type="submit" content="Create" %}
+    </div>
   </form>
 </div>
 {% endif %}
