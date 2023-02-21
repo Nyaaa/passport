@@ -283,7 +283,7 @@ class OrderCreateView(SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('order_detail', kwargs={'pk': self.object.pk})
 
-    def get_success_message(self, cleaned_data):
+    def get_success_message(self, _):
         return f'Order №{self.object} created successfully'
 
 
@@ -309,7 +309,6 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
 class OrderUpdateView(CommonUpdateView):
     model = Order
-    template_name = 'common_edit.html'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -317,7 +316,7 @@ class OrderUpdateView(CommonUpdateView):
         self.text = self.model.__name__.lower()
         self.success_url = reverse_lazy(self.text)
 
-    def get_success_message(self, cleaned_data):
+    def get_success_message(self, _):
         return f'Order {self.object} updated successfully'
 
 
