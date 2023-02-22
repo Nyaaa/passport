@@ -7,10 +7,10 @@ set_item_formset = forms.inlineformset_factory(
     Set,
     SetItem,
     fields=['item', 'amount', 'tray', 'comment'],
-    widgets={'item': AutoCompleteWidget('article', attrs={'class': 'form-control'}),
-             'amount': forms.NumberInput(attrs={'class': 'form-control'}),
-             'tray': forms.NumberInput(attrs={'class': 'form-control'}),
-             'comment': forms.TextInput(attrs={'class': 'form-control'}),
+    widgets={'item': AutoCompleteWidget('article'),
+             'amount': forms.NumberInput(attrs={'style': 'max-width:100px;'}),
+             'tray': forms.NumberInput(attrs={'style': 'max-width:100px;'}),
+             'comment': forms.TextInput(),
              })
 
 

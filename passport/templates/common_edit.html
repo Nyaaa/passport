@@ -1,5 +1,6 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
+{% load widget_tweaks %}
 
 {% block title %}{{ title }}{% endblock title %}
 
@@ -18,39 +19,50 @@
         {{ formset.management_form }}
         {{ formset.media }}
 
-        <table aria-labelledby="Set items">
-          <thead>
-          <tr>
-            {% for field in formset.forms.0 %}
-            {% if field.label and not field.is_hidden %}
-            <th>
+        {% for form in formset.forms %}
+        {% for field in form.hidden_fields %}
+        {{ field }}
+        {% endfor %}
+
+        <div class="row align-items-center">
+          {% for field in form.visible_fields %}
+          <div class="col-auto m-0 p-0" style="min-width:50px;">
+            {% if forloop.parentloop.counter == 1 %}
+            <label class="form-label">
               {{ field.label }}
-            </th>
+              {% if field.help_text %} <span data-bs-toggle="tooltip" title="{{ field.help_text }}">
+              <i class="fa-regular fa-circle-question">{% endif %}</i>
+            </span>
+            </label>
             {% endif %}
-            {% endfor %}
-          </tr>
-          </thead>
-          {% for form in formset.forms %}
-          <tr>
-            {% for field in form %}
-            <td>
-              {{ field }}
-            </td>
-            {% endfor %}
-          </tr>
+            {% if 'DELETE' in field.name %}
+            <div class="text-center">
+              {% render_field field class="form-check-input m-2" title=field.label type="checkbox" %}
+            </div>
+            {% else %}
+              {% render_field field class="form-control rounded-0" title=field.label %}
+            {% endif %}
+          </div>
           {% endfor %}
-        </table>
+        </div>
+        {% endfor %}
       {% endif %}
 
       <div class="my-3">
         {% bootstrap_button button_type="submit" content="Save" %}
         <a href="{{request.META.HTTP_REFERER|escape}}" class="btn btn-outline-primary">Cancel</a>
         {% if request.resolver_match.url_name != 'order_create' %}
-          <a href="{{ delete_view }}?{{ request.GET.urlencode }}" class="btn btn-danger">Delete</a>
+          <a href="{{ delete_view }}?{{ request.GET.urlencode }}" class="btn btn-outline-danger">Delete</a>
         {% endif %}
       </div>
     </div>
   </form>
 {% endif %}
+
+<script>
+  $(function () {
+  $('[data-bs-toggle="tooltip"]').tooltip()
+})
+</script>
 
 {% endblock content %}

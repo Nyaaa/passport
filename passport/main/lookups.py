@@ -16,7 +16,7 @@ class CityLookup(LookupChannel):
 class ItemLookup(LookupChannel):
 
     model = Item
-    min_length = 3
+    min_length = 2
 
     def get_query(self, q, request):
         return self.model.objects.filter(article__icontains=q).order_by('article')[:10]
@@ -26,7 +26,7 @@ class ItemLookup(LookupChannel):
 class SetLookup(LookupChannel):
 
     model = Set
-    min_length = 3
+    min_length = 2
 
     def get_query(self, q, request):
         return self.model.objects.filter(serial__icontains=q).order_by('serial')[:10]
