@@ -7,7 +7,7 @@
 <canvas id="distributor_sets_chart" width="800" height="400"></canvas>
 <div class="row">
   <div class="col">
-    <canvas id="shipments_by_year" width="400" height="250"></canvas>
+    <canvas id="shipments" width="400" height="250"></canvas>
   </div>
   <div class="col">
     <canvas id="returns" width="400" height="250"></canvas>
@@ -31,17 +31,24 @@ const myChart = new Chart(ctx, {
   }
 });
 
-const ctx2 = document.getElementById('shipments_by_year').getContext('2d');
+const ctx2 = document.getElementById('shipments').getContext('2d');
 
 const myChart2 = new Chart(ctx2, {
   type: 'bar',
   data: {
-    labels : [{% for item in shipments_by_year %}"{{ item.year|date:'Y' }}",{% endfor %}],
+    labels : [{% for item in shipments %}"{{ item.year|date:'Y' }}",{% endfor %}],
       datasets: [{
-        label: "Shipments by year",
-        data : [{% for item in shipments_by_year %}{{ item.count }},{% endfor %}],
-        backgroundColor: 'rgba(46, 204, 113, 0.2)',
-        borderColor: 'rgba(46, 204, 113, 1)',
+        label: "Shipments",
+        data : [{% for item in shipments %}{{ item.date__count }},{% endfor %}],
+        backgroundColor: 'rgba(29, 78, 137, 0.2)',
+        borderColor: 'rgba(29, 78, 137, 1)',
+        borderWidth: 1
+      },
+      {
+        label: "Sets shipped",
+        data : [{% for item in shipments %}{{ item.sets__count }},{% endfor %}],
+        backgroundColor: 'rgba(0, 178, 202, 0.2)',
+        borderColor: 'rgba(0, 178, 202, 1)',
         borderWidth: 1
       }]
   }
@@ -54,10 +61,17 @@ const myChart3 = new Chart(ctx3, {
   data: {
     labels : [{% for item in returns %}"{{ item.year|date:'Y' }}",{% endfor %}],
       datasets: [{
-        label: "Returns by year",
-        data : [{% for item in returns %}{{ item.count }},{% endfor %}],
-        backgroundColor: 'rgba(155, 89, 182, 0.2)',
-        borderColor: 'rgba(155, 89, 182,1.0)',
+        label: "Returns",
+        data : [{% for item in returns %}{{ item.date__count }},{% endfor %}],
+        backgroundColor: 'rgba(58, 87, 67, 0.2)',
+        borderColor: 'rgba(58, 87, 67, 1)',
+        borderWidth: 1
+      },
+      {
+        label: "Sets returned",
+        data : [{% for item in returns %}{{ item.sets__count }},{% endfor %}],
+        backgroundColor: 'rgba(173, 226, 93, 0.2)',
+        borderColor: 'rgba(173, 226, 93, 1.0)',
         borderWidth: 1
       }]
   }

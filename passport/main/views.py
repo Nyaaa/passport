@@ -38,13 +38,16 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context['distributor_sets_chart'] = qs.values('distributor').order_by('distributor')\
             .annotate(count=Count('serial')).values('distributor', 'count')
 
-        context['shipments_by_year'] = Order.objects.exclude(distributor__pk=1)\
-            .annotate(year=TruncYear('date')).values('year').annotate(count=Count('date'))\
-            .values('year', 'count').filter(year__gt=date_limit)
+        context['shipments'] = Order.objects.exclude(distributor__pk=1)\
+            .annotate(year=TruncYear('date')).values('year')\
+            .annotate(Count('date', distinct=True), Count('sets'))\
+            .values('year', 'date__count', 'sets__count').filter(year__gt=date_limit)
 
         context['returns'] = Order.objects.filter(distributor__pk=1)\
-            .annotate(year=TruncYear('date')).values('year').annotate(count=Count('date'))\
-            .values('year', 'count').filter(year__gt=date_limit)
+            .annotate(year=TruncYear('date')).values('year')\
+            .annotate(Count('date', distinct=True), Count('sets'))\
+            .values('year', 'date__count', 'sets__count').filter(year__gt=date_limit)
+
         return context
 
 

@@ -26,4 +26,3 @@ To fill database with auto-generated sample data, run:
 * export for detail views?
 * image storage solution
 * add admin
-* sets shipped/returned per year
