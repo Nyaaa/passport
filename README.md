@@ -25,4 +25,3 @@ To fill database with auto-generated sample data, run:
 * add tests
 * export for detail views?
 * image storage solution
-* add admin
