@@ -58,11 +58,12 @@
     </div>
   </form>
 {% endif %}
+{% endblock content %}
 
+{% block scripts %}
 <script>
   $(function () {
   $('[data-bs-toggle="tooltip"]').tooltip()
 })
 </script>
-
-{% endblock content %}
+{% endblock scripts %}

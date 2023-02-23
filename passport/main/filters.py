@@ -39,11 +39,11 @@ class SetFilter(FilterSet):
     serial = CharFilter(lookup_expr='icontains')
     comment = CharFilter(lookup_expr='icontains')
     distributor = ModelChoiceFilter(empty_label='All distributors', queryset=Distributor.objects.all().order_by('name'),
-                                    method='set_order_filter')
+                                    method='set_order_filter', label='Distributor')
     recipient = ModelChoiceFilter(empty_label='All recipients', queryset=Recipient.objects.all().order_by('name'),
-                                  method='set_order_filter')
+                                  method='set_order_filter', label='Recipient')
     city = ModelChoiceFilter(empty_label='All cities', queryset=City.objects.all().order_by('name'),
-                             method='set_order_filter')
+                             method='set_order_filter', label='City')
     document = NumberFilter(label='Document', method='set_order_filter')
 
     @staticmethod
@@ -56,7 +56,8 @@ class SetFilter(FilterSet):
 
 
 class OrderFilter(FilterSet):
-    date = DateFilter(lookup_expr='gt', widget=forms.DateInput(attrs={'type': 'date'}))
+    date_from = DateFilter(field_name='date', lookup_expr='gt', widget=forms.DateInput(attrs={'type': 'date'}))
+    date_to = DateFilter(field_name='date', lookup_expr='lt', widget=forms.DateInput(attrs={'type': 'date'}))
     sets = ModelChoiceFilter(queryset=Set.objects.all(), widget=AutoCompleteWidget('set'))
     distributor = ModelChoiceFilter(empty_label='All distributors', queryset=Distributor.objects.all().order_by('name'))
     recipient = ModelChoiceFilter(empty_label='All recipients', queryset=Recipient.objects.all().order_by('name'))
@@ -64,4 +65,4 @@ class OrderFilter(FilterSet):
 
     class Meta:
         model = Order
-        fields = ['date', 'distributor', 'recipient', 'city', 'document']
+        fields = ['date_from', 'date_to', 'distributor', 'recipient', 'city', 'document']

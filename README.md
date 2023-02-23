@@ -21,7 +21,6 @@ To fill database with auto-generated sample data, run:
 
 ## TODO
 * implement analytics
-* change filter date picker to range
 * add tests
 * export for detail views?
 * image storage solution
