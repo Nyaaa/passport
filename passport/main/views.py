@@ -95,7 +95,6 @@ class CommonListView(SuccessMessageMixin, LoginRequiredMixin, ExportMixin, Singl
         self.form_class = modelform_init(self.model)
         self.table_class = table_factory(self.model)
         self.filterset_class = filter_factory(self.model)
-        self.form_class = modelform_init(self.model)
         self.object_list = self.get_queryset()
         self.object = None
 

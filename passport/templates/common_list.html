@@ -44,10 +44,24 @@
     <div class="input-group">
       <span class="input-group-text" id="create-label">New {{ title.lower }}:</span>
       {% for field in form %}
-      {% render_field field class="form-control" style="min-width: 100px;" placeholder=field.label %}
+        {% if form.is_bound %}
+          {% if field.errors %}
+            {% render_field field class="form-control is-invalid" style="min-width: 100px;" placeholder=field.label %}
+          {% else %}
+            {% render_field field class="form-control is-valid" style="min-width: 100px;" placeholder=field.label %}
+          {% endif %}
+        {% else %}
+          {% render_field field class="form-control" style="min-width: 100px;" placeholder=field.label %}
+        {% endif %}
       {% endfor %}
+
       {% bootstrap_button button_type="submit" content="Create" %}
     </div>
+    {% if form.errors %}
+      {% for field in form %}
+      <div class="text-danger">{{ field.errors }}</div>
+      {% endfor %}
+    {% endif %}
   </form>
 </div>
 {% endif %}
