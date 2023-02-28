@@ -122,16 +122,9 @@ class CommonListView(SuccessMessageMixin, LoginRequiredMixin, ExportMixin, Singl
 
 
 class CommonDeleteView(LoginRequiredMixin, DeleteView):
-    """Universal UpdateView for all models"""
+    """Universal UpdateView for all models.
+    Gets model from urls.py"""
     template_name = 'common_delete.html'
-
-    def __init__(self, *args, **kwargs):
-        """
-        Gets model from urls.py
-        Args:
-            **kwargs (): model: Django model
-        """
-        super(CommonDeleteView, self).__init__(*args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy(self.model.__name__.lower()) + '?' + self.request.GET.urlencode()
