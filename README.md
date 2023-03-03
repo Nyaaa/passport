@@ -1,3 +1,4 @@
+[![Coverage Status](https://coveralls.io/repos/github/Nyaaa/passport/badge.svg)](https://coveralls.io/github/Nyaaa/passport)
 # passport
 Packing list management tool / inventory management tool
 
