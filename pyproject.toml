@@ -24,6 +24,7 @@ django-debug-toolbar = "^3.8.1"
 django-stubs = "^1.14.0"
 faker = "^17.0.0"
 coverage = "^7.2.1"
+python-coveralls = "^2.9.3"
 
 [build-system]
 requires = ["poetry-core"]
