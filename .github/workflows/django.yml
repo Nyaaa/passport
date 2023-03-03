@@ -27,6 +27,7 @@ jobs:
     - name: Run Tests
       run: |
         cd passport
+        poetry shell
         coverage run manage.py test
         coverage report
         python 
