@@ -19,7 +19,7 @@ class Series(models.Model):
 
 def item_img_path(instance, filename):
     ext = filename.split('.')[-1].lower()
-    if instance.pk:
+    if instance:
         filename = f'item_img/{instance.pk}.{ext}'
     else:
         # adding just in case, this should never trigger

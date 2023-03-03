@@ -1,6 +1,8 @@
 from django.test import TestCase
 from main.models import Distributor, Recipient, ProtectedError, City, \
     Order, Series, Item, Set, item_img_path
+from uuid import UUID
+import re
 
 
 class ModelTests(TestCase):
@@ -68,3 +70,8 @@ class ModelTests(TestCase):
 
     def test_img_path(self):
         self.assertEqual(item_img_path(self.i, 'image.jpg'), 'item_img/item_article.jpg')
+        gen_uuid = item_img_path(None, 'image.jpg')
+        folder, uuid, ext = re.split(r'/|\.', gen_uuid)
+        self.assertEqual(ext, 'jpg')
+        self.assertEqual(folder, 'item_img')
+        self.assertEqual(UUID(uuid).version, 4)
