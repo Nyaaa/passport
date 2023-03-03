@@ -19,6 +19,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Setup Poetry
       uses: Gr1N/setup-poetry@v8
+    - run: poetry install
     - uses: actions/cache@v2
       with:
         path: ~/.cache/pypoetry/virtualenvs
