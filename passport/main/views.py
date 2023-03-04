@@ -106,7 +106,7 @@ class CommonListView(SuccessMessageMixin, LoginRequiredMixin, ExportMixin, Singl
     def get_success_url(self):
         return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
 
-    def get_success_message(self, cleaned_data):
+    def get_success_message(self, _):
         return f'{self.object} created successfully'
 
     def get_context_data(self, **kwargs):
