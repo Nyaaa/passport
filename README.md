@@ -22,6 +22,5 @@ To fill database with auto-generated sample data, run:
 
 ## TODO
 * implement analytics
-* add tests
 * export for detail views?
 * image storage solution
