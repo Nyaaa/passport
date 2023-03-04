@@ -26,6 +26,7 @@ jobs:
     - name: Run Tests
       env: 
         GITHUB_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
         cd passport
         poetry run coverage run manage.py test
