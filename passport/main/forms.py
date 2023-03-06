@@ -52,10 +52,16 @@ class SetForm(forms.ModelForm):
         cleaned_data['serial'] = cleaned_data['serial'].strip().upper()
         try:
             int(cleaned_data.get('serial').rsplit('-')[1])
-        except ValueError:
+        except (ValueError, IndexError):
             raise ValidationError({
-                "serial": "serial must end with number"
+                "serial": "Serial must end with number."
             })
+        if cleaned_data['serial'] != self.instance.serial:
+            find_serial = Set.objects.filter(serial=cleaned_data['serial'])
+            if find_serial:
+                raise ValidationError({
+                    "serial": "A set with this serial number already exists."
+                })
         return cleaned_data
 
 

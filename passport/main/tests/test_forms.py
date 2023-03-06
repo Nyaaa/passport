@@ -1,20 +1,33 @@
 from django.test import TestCase
 from main.forms import SetForm, modelform_init
-from main.models import Item, City
+from main.models import Item, City,Set
+from model_bakery import baker
 
 
 class FormTests(TestCase):
-    def test_setform_invalid_serial(self):
+    def test_set_form_invalid_serial(self):
         item = Item.objects.create(article='item_article', name='item_name')
-        form = SetForm(data={'serial': 'AB123C-000a', 'article': item})
-        self.assertFalse(form.is_valid())
+        data = [{'serial': 'AB123C-000a', 'article': item},
+                {'serial': 'AB123C-aaaa', 'article': item},
+                {'serial': 'AB123C-', 'article': item},
+                {'serial': 'AB123C', 'article': item}]
+        for i in data:
+            form = SetForm(data=i)
+            self.assertFalse(form.is_valid())
 
-    def test_setform_clean(self):
+    def test_set_form_clean_valid(self):
         item = Item.objects.create(article='item_article', name='item_name')
         form = SetForm(data={'serial': ' ab123c-0001 ', 'article': item})
         self.assertTrue(form.is_valid())
         saved = form.save()
         self.assertEqual(saved.serial, 'AB123C-0001')
+
+    def test_set_form_exists(self):
+        item = Item.objects.create(article='item_article', name='item_name')
+        baker.make(Set, serial='AB123C-0001')
+        set2 = baker.make(Set, serial='AB123C-0002')
+        form = SetForm(instance=set2, data={'serial': 'AB123C-0001', 'article': item})
+        self.assertFalse(form.is_valid())
 
     def test_modelform(self):
         self.assertTrue(modelform_init(Item))
