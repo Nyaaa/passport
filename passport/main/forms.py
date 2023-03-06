@@ -56,12 +56,11 @@ class SetForm(forms.ModelForm):
             raise ValidationError({
                 "serial": "Serial must end with number."
             })
-        if cleaned_data['serial'] != self.instance.serial:
-            find_serial = Set.objects.filter(serial=cleaned_data['serial'])
-            if find_serial:
-                raise ValidationError({
-                    "serial": "A set with this serial number already exists."
-                })
+        find_serial = Set.objects.filter(serial=cleaned_data['serial'])
+        if find_serial and cleaned_data['serial'] != self.instance.serial:
+            raise ValidationError({
+                "serial": "A set with this serial number already exists."
+            })
         return cleaned_data
 
 
