@@ -16,8 +16,7 @@
       {% bootstrap_form form layout='' %}
 
       {% if formset %}
-        {{ formset.management_form }}
-        {{ formset.media }}
+        {% bootstrap_form formset.management_form %}
 
         {% for form in formset.forms %}
         {% for field in form.hidden_fields %}

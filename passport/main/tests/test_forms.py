@@ -1,25 +1,24 @@
 from django.test import TestCase
 from main.forms import SetForm, modelform_init
-from main.models import Item, City,Set
+from main.models import Item, City, Set
 from model_bakery import baker
 
 
 class FormTests(TestCase):
     @classmethod
     def setUpTestData(cls) -> None:
-        cls.item = baker.make(Item)
+        cls.item = Item.objects.create(article='AB123C', name='item_name')
 
-    def test_set_form_invalid_serial(self):
+    def test_setform_invalid_serial(self):
         data = [{'serial': 'AB123C-000a', 'article': self.item},
-                {'serial': 'AB123C-aaaa', 'article': self.item},
-                {'serial': 'AB123C-', 'article': self.item},
-                {'serial': 'AB123C', 'article': self.item}]
-        for i in data:
-            form = SetForm(data=i)
+                {'serial': 'XY123Z-0001', 'article': self.item},
+                {'serial': 'AB123C/0001', 'article': self.item}]
+        for datum in data:
+            form = SetForm(data=datum)
             self.assertFalse(form.is_valid())
 
-    def test_set_form_clean_valid(self):
-        form = SetForm(data={'serial': ' ab123c-0001 ', 'article': self.item})
+    def test_setform_clean(self):
+        form = SetForm(data={'serial': ' ab123 c -   0001 ', 'article': self.item})
         self.assertTrue(form.is_valid())
         saved = form.save()
         self.assertEqual(saved.serial, 'AB123C-0001')
@@ -48,7 +47,7 @@ class FormTests(TestCase):
 
     def test_modelform_clean_article(self):
         form_class = modelform_init(Item)
-        form = form_class(data={'article': 'ab123c ', 'name': 'item_name'})
+        form = form_class(data={'article': 'ww123x ', 'name': 'item_name'})
         self.assertTrue(form.is_valid())
         saved = form.save()
-        self.assertEqual(saved.article, 'AB123C')
+        self.assertEqual(saved.article, 'WW123X')

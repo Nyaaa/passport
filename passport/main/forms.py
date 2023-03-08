@@ -49,12 +49,15 @@ class SetForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        cleaned_data['serial'] = cleaned_data['serial'].strip().upper()
+        cleaned_data['serial'] = ''.join(cleaned_data['serial'].split()).upper()
         try:
-            int(cleaned_data.get('serial').rsplit('-')[1])
+            split = cleaned_data.get('serial').rsplit('-')
+            int(split[1])
+            if split[0] != str(cleaned_data['article']):
+                raise ValueError
         except (ValueError, IndexError):
             raise ValidationError({
-                "serial": "Serial must end with number."
+                "serial": "Serial number must follow the pattern [article]-[digits]."
             })
         find_serial = Set.objects.filter(serial=cleaned_data['serial'])
         if find_serial and cleaned_data['serial'] != self.instance.serial:
