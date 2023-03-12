@@ -134,6 +134,8 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
+USE_L10N = False
+
 USE_TZ = True
 
 LOCALE_PATHS = [
@@ -165,7 +167,7 @@ LOGOUT_REDIRECT_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('home')
 
 DATETIME_FORMAT = 'Y-m-d, H:i'
-SHORT_DATETIME_FORMAT = 'Y-m-d'
+SHORT_DATE_FORMAT = 'Y-m-d'
 
 INTERNAL_IPS = [
     "127.0.0.1",

@@ -44,7 +44,7 @@
               <td>{{ order.distributor }}</td>
               <td>{{ order.recipient }}</td>
               <td>{{ order.city }}</td>
-              <td>{{ order.date }}</td>
+              <td>{{ order.date|date:"SHORT_DATE_FORMAT" }}</td>
               <td>{{ order.document }}</td>
             </tr>
           </table>

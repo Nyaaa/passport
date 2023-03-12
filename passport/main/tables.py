@@ -60,7 +60,7 @@ def table_factory(_model):
 
 class SetTable(table_factory(Set)):
     view = MetaColumn()
-    date = tables.DateTimeColumn(accessor='date', format='Y-m-d')
+    date = tables.DateTimeColumn(accessor='date', format='SHORT_DATE_FORMAT')
     distributor = tables.Column(accessor='distributor')
     recipient = tables.Column(accessor='recipient')
     city = tables.Column(accessor='city')
@@ -72,7 +72,7 @@ class SetTable(table_factory(Set)):
 
 class OrderTable(table_factory(Order)):
     view = MetaColumn()
-    date = tables.DateTimeColumn(format='Y-m-d')
+    date = tables.DateTimeColumn(format='SHORT_DATE_FORMAT')
     sets = tables.ManyToManyColumn()
 
     class Meta(BaseMeta):
