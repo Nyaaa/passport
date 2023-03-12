@@ -1,3 +1,4 @@
+{% load i18n %}
 <nav class="navbar navbar-expand-lg d-print-none">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Passport</a>
@@ -7,32 +8,62 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">Dashboard</a>
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">
+            {% trans "Dashboard" %}
+          </a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Lists
+            {% trans "Lists" %}
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="{% url 'item' %}">Items</a></li>
-            <li><a class="dropdown-item" href="{% url 'series' %}">Series</a></li>
-            <li><a class="dropdown-item" href="{% url 'distributor' %}">Distributors</a></li>
-            <li><a class="dropdown-item" href="{% url 'recipient' %}">Recipients</a></li>
-            <li><a class="dropdown-item" href="{% url 'city' %}">Cities</a></li>
+            <li><a class="dropdown-item" href="{% url 'item' %}">{% trans "Items" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'series' %}">{% trans "Series" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'distributor' %}">{% trans "Distributors" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'recipient' %}">{% trans "Recipients" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'city' %}">{% trans "Cities" %}</a></li>
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if 'set' in request.path %}active{% endif %}" href="{% url 'set' %}">Sets</a>
+          <a class="nav-link {% if 'set' in request.path %}active{% endif %}" href="{% url 'set' %}">
+            {% trans "Sets" %}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if 'order' in request.path %}active{% endif %}" href="{% url 'order' %}">Orders</a>
+          <a class="nav-link {% if 'order' in request.path %}active{% endif %}" href="{% url 'order' %}">
+            {% trans "Orders" %}</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if 'incomplete' in request.path %}active{% endif %}" href="{% url 'incomplete' %}">Incomplete sets</a>
+          <a class="nav-link {% if 'incomplete' in request.path %}active{% endif %}" href="{% url 'incomplete' %}">
+            {% trans "Incomplete sets" %}</a>
         </li>
       </ul>
-      <button type="button" class="btn btn-outline-secondary btn-sm" id="lightSwitch"><i class="fa-regular fa-moon"></i></button>
-      <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}" role="button">Sigh out</a>
+      <!-- Language selector-->
+      <ul class="navbar-nav">
+      <form action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ request.get_full_path }}"/>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown"
+             aria-expanded="false">
+            <i class="bi bi-translate"></i>
+          </a>
+          <ul class="dropdown-menu" style="min-width: 50px;" aria-labelledby="languageDropdown">
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            {% for language in languages %}
+              <li>
+                <button type="submit" name="language" value="{{ language.code }}" class="btn btn-link">
+                  {{ language.name_local }}
+                </button>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      </form>
+      </ul>
+      <!-- Language selector-->
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="lightSwitch"><i class="bi bi-moon"></i></button>
+      <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}" role="button">{% trans "Sign out" %}</a>
     </div>
   </div>
 </nav>
