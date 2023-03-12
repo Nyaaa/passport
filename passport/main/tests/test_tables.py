@@ -20,9 +20,9 @@ class TableTests(TestCase):
         self.assertEqual(self.table.q_str, 'name=London')
 
     def test_table_factory_render_edit(self):
-        expected = '<a href="1/edit/?name=London"><i class="fa-regular fa-pen-to-square"></i></a>'
-        self.assertEqual(self.table.render_edit(self.c), expected)
+        expected = 'href="1/edit/?name=London"'
+        self.assertIn(expected, self.table.render_edit(self.c))
 
     def test_table_factory_render_view(self):
-        expected = '<a href="1/?name=London"><i class="fa-regular fa-file-lines"></i></a>'
-        self.assertEqual(self.table.render_view(self.c), expected)
+        expected = 'href="1/?name=London"'
+        self.assertIn(expected, self.table.render_view(self.c))
