@@ -45,11 +45,11 @@ def table_factory(_model):
 
         def render_edit(self, record):
             return format_html(f'<a href="{record.pk}/edit/?{self.q_str}">'
-                               '<i class="fa-regular fa-pen-to-square"></i></a>')
+                               '<i class="bi bi-pencil-square"></i></a>')
 
         def render_view(self, record):
             return format_html(f'<a href="{record.pk}/?{self.q_str}">'
-                               '<i class="fa-regular fa-file-lines"></i></a>')
+                               '<i class="bi bi-file-earmark-text"></i></a>')
 
         class Meta(BaseMeta):
             model = _model

@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('main.urls'), name='main'),
     path('__debug__/', include('debug_toolbar.urls')),
     path('ajax_select/', include(ajax_select_urls)),
+    path('i18n/', include('django.conf.urls.i18n')),
 ]
 
 if settings.DEBUG:

@@ -6,7 +6,7 @@ authors = ["Nyaaa <1457047+Nyaaa@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 django = "^4.1.5"
 python-dotenv = "^0.21.0"
 django-filter = "^22.1"

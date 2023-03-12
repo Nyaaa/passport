@@ -1,15 +1,16 @@
 {% extends 'base/default.html' %}
+{% load i18n %}
 
-{% block title %}Delete{% endblock title %}
+{% block title %}{% trans "Delete" %}{% endblock title %}
 
 {% block content %}
-<h1 class="text-center">Delete item?</h1>
+<h1 class="text-center">{% trans "Delete item?" %}</h1>
 <hr>
 <form class="text-center" action="" method="post">
   {% csrf_token %}
-  <p>Do you really want to delete "{{ object }}"?</p>
-  <button type="submit" class="btn btn-danger">Delete</button>
-  <a href="{{ request.META.HTTP_REFERER|escape }}" class="btn btn-default">Cancel</a>
+  <p>{% trans "Do you really want to delete" %} "{{ object }}"?</p>
+  <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+  <a href="{{ request.META.HTTP_REFERER|escape }}" class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
 <br>
 {% endblock content %}

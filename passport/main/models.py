@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.db.models import ProtectedError
 from django.core.validators import MinValueValidator
 import uuid
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
@@ -44,8 +45,8 @@ class Item(models.Model):
 class SetItem(models.Model):
     set = models.ForeignKey('Set', on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.RESTRICT)
-    amount = models.IntegerField(default=1, validators=[MinValueValidator(0, 'Quantity should be >= 0')])
-    tray = models.IntegerField(default=1, help_text="Select tray 0 for optional items.")
+    amount = models.IntegerField(default=1, validators=[MinValueValidator(0, _('Quantity should be >= 0'))])
+    tray = models.IntegerField(default=1, help_text=_('Select tray 0 for optional items.'))
     comment = models.TextField(blank=True, null=True)
 
 
@@ -70,7 +71,7 @@ class Distributor(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.pk == 1:
-            raise ProtectedError('This is a system object', self)
+            raise ProtectedError(_('This is a system object'), self)
         else:
             super(Distributor, self).delete(*args, **kwargs)
 
@@ -83,7 +84,7 @@ class Recipient(models.Model):
 
     def delete(self, *args, **kwargs):
         if self.pk in (1, 2):
-            raise ProtectedError('This is a system object', self)
+            raise ProtectedError(_('This is a system object'), self)
         else:
             super(Recipient, self).delete(*args, **kwargs)
 

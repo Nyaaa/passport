@@ -1,8 +1,9 @@
 {% extends 'base/default.html' %}
+{% load i18n %}
 
 {% block title %}Dashboard{% endblock title %}
 {% block content %}
-<h1 class="text-center">Dashboard</h1>
+<h1 class="text-center">{% trans "Dashboard" %}</h1>
 <canvas id="distributor_sets_chart" width="800" height="400"></canvas>
 <div class="row">
   <div class="col">
@@ -24,7 +25,7 @@ const myChart = new Chart(ctx, {
   data: {
     labels : [{% for item in distributor_sets_chart %}"{{ item.distributor }}",{% endfor %}],
       datasets: [{
-        label: "Sets by distributor",
+        label: "{% trans "Sets by distributor" %}",
         data : [{% for item in distributor_sets_chart %}{{ item.count }},{% endfor %}],
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
@@ -40,14 +41,14 @@ const myChart2 = new Chart(ctx2, {
   data: {
     labels : [{% for item in shipments %}"{{ item.year|date:'Y' }}",{% endfor %}],
       datasets: [{
-        label: "Shipments",
+        label: "{% trans "Shipments" %}",
         data : [{% for item in shipments %}{{ item.date__count }},{% endfor %}],
         backgroundColor: 'rgba(29, 78, 137, 0.2)',
         borderColor: 'rgba(29, 78, 137, 1)',
         borderWidth: 1
       },
       {
-        label: "Sets shipped",
+        label: "{% trans "Sets shipped" %}",
         data : [{% for item in shipments %}{{ item.sets__count }},{% endfor %}],
         backgroundColor: 'rgba(0, 178, 202, 0.2)',
         borderColor: 'rgba(0, 178, 202, 1)',
@@ -63,14 +64,14 @@ const myChart3 = new Chart(ctx3, {
   data: {
     labels : [{% for item in returns %}"{{ item.year|date:'Y' }}",{% endfor %}],
       datasets: [{
-        label: "Returns",
+        label: "{% trans "Returns" %}",
         data : [{% for item in returns %}{{ item.date__count }},{% endfor %}],
         backgroundColor: 'rgba(58, 87, 67, 0.2)',
         borderColor: 'rgba(58, 87, 67, 1)',
         borderWidth: 1
       },
       {
-        label: "Sets returned",
+        label: "{% trans "Sets returned" %}",
         data : [{% for item in returns %}{{ item.sets__count }},{% endfor %}],
         backgroundColor: 'rgba(173, 226, 93, 0.2)',
         borderColor: 'rgba(173, 226, 93, 1.0)',
