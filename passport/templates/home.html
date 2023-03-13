@@ -1,7 +1,7 @@
 {% extends 'base/default.html' %}
 {% load i18n %}
 
-{% block title %}Dashboard{% endblock title %}
+{% block title %}{% trans "Dashboard" %}{% endblock title %}
 {% block content %}
 <h1 class="text-center">{% trans "Dashboard" %}</h1>
 <canvas id="distributor_sets_chart" width="800" height="400"></canvas>

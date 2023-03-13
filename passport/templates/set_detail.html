@@ -1,12 +1,13 @@
 {% extends 'base/default.html' %}
 {% load bootstrap5 %}
 {% load custom_filters %}
+{% load i18n %}
 
 {% block title %}
   {% if set.serial %}
-    Set {{ set.serial }}
+    {% trans "Set" %} {{ set.serial }}
   {% else %}
-    Order №{{ order }}
+    {% trans "Order №" %}{{ order }}
   {% endif %}
 {% endblock title %}
 
@@ -17,9 +18,9 @@
     <table class="table table-info table-striped text-center" aria-describedby="Set info for {{ set.serial }}">
       <thead>
       <tr>
-        <th>Set</th>
-        <th>S/N</th>
-        <th>Series</th>
+        <th>{% trans "Set" %}</th>
+        <th>{% trans "S/N" %}</th>
+        <th>{% trans "Series" %}</th>
       </tr>
       </thead>
       <tr>
@@ -33,11 +34,11 @@
           <table class="table table-success table-striped" aria-describedby="Order info for {{ set.serial }}">
             <thead>
             <tr>
-              <th>Distributor</th>
-              <th>Recipient</th>
-              <th>City</th>
-              <th>Date</th>
-              <th>Document</th>
+              <th>{% trans "Distributor" %}</th>
+              <th>{% trans "Recipient" %}</th>
+              <th>{% trans "City" %}</th>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "Document" %}</th>
             </tr>
             </thead>
             <tr>
@@ -54,13 +55,17 @@
     </table>
 
     <div class="text-center d-print-none">
-      <a href="{% url 'set_edit' pk=set.pk %}" role="button" class="btn btn-outline-primary">Edit set</a>
+      <a href="{% url 'set_edit' pk=set.pk %}" role="button" class="btn btn-outline-primary">
+        {% trans "Edit set" %}</a>
       {% if 'order' in request.path %}
-      <a href="{% url 'set_detail' pk=set.pk %}" role="button" class="btn btn-outline-primary">View set</a>
-      <a href="{% url 'order_edit' pk=order.pk %}" role="button" class="btn btn-outline-primary">Edit order</a>
+      <a href="{% url 'set_detail' pk=set.pk %}" role="button" class="btn btn-outline-primary">
+        {% trans "View set" %}</a>
+      <a href="{% url 'order_edit' pk=order.pk %}" role="button" class="btn btn-outline-primary">
+        {% trans "Edit order" %}</a>
       {% else %}
         {% if order %}
-        <a href="{% url 'order_detail' pk=order.pk %}" role="button" class="btn btn-outline-primary">View order</a>
+        <a href="{% url 'order_detail' pk=order.pk %}" role="button" class="btn btn-outline-primary">
+          {% trans "View order" %}</a>
         {% endif %}
       {% endif %}
     </div>
@@ -70,16 +75,16 @@
     <table class="table table-striped table-sm caption-top" aria-describedby="Set item list for {{ set.serial }}"
            style="break-inside:avoid">
       {% if tray == 0 %}
-        <caption>Optional tools</caption>
+        <caption>{% trans "Optional tools" %}</caption>
       {% else %}
-        <caption>Tray №{{ tray }}</caption>
+        <caption>{% trans "Tray №" %}{{ tray }}</caption>
       {% endif %}
       <thead>
         <tr>
           <th>№</th>
-          <th>Article</th>
-          <th>Name</th>
-          <th>Amount</th>
+          <th>{% trans "Article" %}</th>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Amount" %}</th>
         </tr>
       </thead>
       {% for setitem in set_items|get_values:set.serial|get_values:tray %}
@@ -87,7 +92,7 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ setitem.item }}</td>
         <td>{{ setitem.item.name }}</td>
-        <td>{{ setitem.amount }} pcs</td>
+        <td>{{ setitem.amount }} {% trans "pcs" %}</td>
       </tr>
       {% endfor %}
     </table>

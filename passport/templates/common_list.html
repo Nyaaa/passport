@@ -3,26 +3,30 @@
 {% load render_table from django_tables2 %}
 {% load export_url from django_tables2 %}
 {% load widget_tweaks %}
+{% load i18n %}
 
-{% block title %}{{ title }} list{% endblock title %}
+{% block title %}{{ title }}{% endblock title %}
 
 {% block content %}
 <div class="text-center">
-  <h1>{{ title }} list</h1>
+  <h1>{{ title }}</h1>
 </div>
 
 {% if filter %}
 <form class="" action="" method="get" >
   <div class="input-group">
-    <span class="input-group-text" id="counter-label">Items: {{ page_obj.paginator.count }}</span>
+    <span class="input-group-text" id="counter-label">
+      {% trans "Items" context "total number of objects" %}: {{ page_obj.paginator.count }}
+    </span>
     {% for field in filter.form %}
       {% render_field field class="form-control" style="min-width: 100px;" title=field.label placeholder=field.label %}
     {% endfor %}
     {% bootstrap_button content='Filter' %}
     {% if filter.is_bound %}
-      <a href="{% url request.resolver_match.view_name %}" class="btn btn-outline-primary">Clear filters</a>
+      <a href="{% url request.resolver_match.view_name %}" class="btn btn-outline-primary">{% trans "Clear filters" %}</a>
     {% endif %}
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Export</button>
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+            data-bs-toggle="dropdown" aria-expanded="false">{% trans "Export" %}</button>
     <ul class="dropdown-menu">
       <li><a class="dropdown-item" href="{% export_url 'csv' %}">CSV</a></li>
       <li><a class="dropdown-item" href="{% export_url 'ods' %}">ODS</a></li>
@@ -42,7 +46,7 @@
     {% csrf_token %}
 
     <div class="input-group">
-      <span class="input-group-text" id="create-label">New {{ title.lower }}:</span>
+      <span class="input-group-text" id="create-label">{% trans "New" %} {{ title_singular.lower }}:</span>
       {% for field in form %}
         {% if form.is_bound %}
           {% if field.errors %}

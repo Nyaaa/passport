@@ -4,12 +4,12 @@
 {% block title %}{% trans "Delete" %}{% endblock title %}
 
 {% block content %}
-<h1 class="text-center">{% trans "Delete item?" %}</h1>
+<h1 class="text-center">{% trans "Delete" %}</h1>
 <hr>
 <form class="text-center" action="" method="post">
   {% csrf_token %}
-  <p>{% trans "Do you really want to delete" %} "{{ object }}"?</p>
-  <button type="submit" class="btn btn-danger">{% trans "Delete" %}</button>
+  <p>{% blocktranslate %}Do you really want to delete "{{ object }}"?{% endblocktranslate %}</p>
+  <button type="submit" class="btn btn-danger">{% blocktranslate context "button" %}Delete{% endblocktranslate %}</button>
   <a href="{{ request.META.HTTP_REFERER|escape }}" class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
 <br>

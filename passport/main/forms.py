@@ -2,6 +2,7 @@ from django import forms
 from .models import Item, Set, Order, SetItem
 from django.core.exceptions import ValidationError
 from ajax_select.fields import AutoCompleteWidget, AutoCompleteSelectWidget, AutoCompleteSelectMultipleWidget
+from django.utils.translation import gettext_lazy as _
 
 set_item_formset = forms.inlineformset_factory(
     Set,
@@ -57,12 +58,12 @@ class SetForm(forms.ModelForm):
                 raise ValueError
         except (ValueError, IndexError):
             raise ValidationError({
-                "serial": "Serial number must follow the pattern [article]-[digits]."
+                "serial": _("Serial number must follow the pattern [article]-[digits].")
             })
         find_serial = Set.objects.filter(serial=cleaned_data['serial'])
         if find_serial and cleaned_data['serial'] != self.instance.serial:
             raise ValidationError({
-                "serial": "A set with this serial number already exists."
+                "serial": _("A set with this serial number already exists.")
             })
         return cleaned_data
 

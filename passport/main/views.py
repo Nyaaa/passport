@@ -17,6 +17,8 @@ from django.db.models.functions import TruncYear
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext
 
 
 # Create your views here.
@@ -66,14 +68,14 @@ class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
         self.text = self.model.__name__.lower()
 
     def get_success_message(self, cleaned_data):
-        return f'{self.object} updated successfully'
+        return _('%s updated successfully') % self.object
 
     def get_success_url(self):
         return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = f'Edit {self.text}'
+        context['title'] = pgettext('page title', 'Edit')
         context['delete_view'] = reverse_lazy(f'{self.text}_delete', kwargs={'pk': self.object.pk})
         return context
 
@@ -106,12 +108,13 @@ class CommonListView(SuccessMessageMixin, LoginRequiredMixin, ExportMixin, Singl
     def get_success_url(self):
         return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
 
-    def get_success_message(self, _):
-        return f'{self.object} created successfully'
+    def get_success_message(self, cleaned_data):
+        return _('%s created successfully') % self.object
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = f'{self.model.__name__}'
+        context['title'] = self.model._meta.verbose_name_plural.title()
+        context['title_singular'] = self.model._meta.verbose_name.title()
         return context
 
     def get_table(self, **kwargs):
@@ -133,7 +136,7 @@ class CommonDeleteView(LoginRequiredMixin, DeleteView):
         obj = self.get_object()
         try:
             super(CommonDeleteView, self).delete(*args, **kwargs)
-            messages.success(self.request, f'{obj} deleted successfully')
+            messages.success(self.request, _('%s deleted successfully') % obj)
         except (ProtectedError, RestrictedError) as e:
             messages.error(self.request, e.args[0])
         return redirect(self.get_success_url())
@@ -175,10 +178,10 @@ class SetListView(CommonListView):
         # setting serial number
         if prev:
             prev_serial = int(prev.pk.split('-')[1])
-            next_serial = f"{article}-{(prev_serial + 1):04d}"
+            next_serial = f'{article}-{(prev_serial + 1):04d}'
             prev_items = list(SetItem.objects.filter(set=prev.pk))
         else:
-            next_serial = f"{article}-{1:04d}"
+            next_serial = f'{article}-{1:04d}'
         _set.serial = next_serial
 
         # copying m2m items
@@ -278,12 +281,12 @@ class OrderCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('order_detail', kwargs={'pk': self.object.pk})
 
-    def get_success_message(self, _):
-        return f'Order №{self.object} created successfully'
+    def get_success_message(self, cleaned_data):
+        return _('Order №%s created successfully') % self.object
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = f'Create new order:'
+        context['title'] = _('New order')
         return context
 
 
@@ -316,8 +319,8 @@ class OrderUpdateView(CommonUpdateView):
         self.text = self.model.__name__.lower()
         self.success_url = reverse_lazy(self.text)
 
-    def get_success_message(self, _):
-        return f'Order {self.object} updated successfully'
+    def get_success_message(self, cleaned_data):
+        return _('Order №%s updated successfully') % self.object
 
 
 class IncompleteSetView(LoginRequiredMixin, ListView):

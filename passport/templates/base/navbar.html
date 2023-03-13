@@ -9,6 +9,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'home' %}">
+            {# Translators: Page with stats and charts #}
             {% trans "Dashboard" %}
           </a>
         </li>
