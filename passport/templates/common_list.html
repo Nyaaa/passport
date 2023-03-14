@@ -21,12 +21,15 @@
     {% for field in filter.form %}
       {% render_field field class="form-control" style="min-width: 100px;" title=field.label placeholder=field.label %}
     {% endfor %}
-    {% bootstrap_button content='Filter' %}
     {% if filter.is_bound %}
-      <a href="{% url request.resolver_match.view_name %}" class="btn btn-outline-primary">{% trans "Clear filters" %}</a>
+    <a href="{% url request.resolver_match.view_name %}" class="btn btn-outline-danger"
+       title="{% trans 'Clear filters' %}">
+      <i class="bi bi-backspace"></i>
+    </a>
     {% endif %}
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button"
-            data-bs-toggle="dropdown" aria-expanded="false">{% trans "Export" %}</button>
+    <button type="submit" class="btn btn-primary" title="{% trans 'Filter' %}"><i class="bi bi-funnel"></i></button>
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" title="{% trans 'Export' %}"
+            data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-cloud-download"></i></button>
     <ul class="dropdown-menu">
       <li><a class="dropdown-item" href="{% export_url 'csv' %}">CSV</a></li>
       <li><a class="dropdown-item" href="{% export_url 'ods' %}">ODS</a></li>
@@ -58,8 +61,7 @@
           {% render_field field class="form-control" style="min-width: 100px;" placeholder=field.label %}
         {% endif %}
       {% endfor %}
-
-      {% bootstrap_button button_type="submit" content="Create" %}
+      <button type="submit" class="btn btn-primary">{% trans "Create" context "button" %}</button>
     </div>
     {% if form.errors %}
       {% for field in form %}

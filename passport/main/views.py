@@ -18,7 +18,7 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import pgettext
+from django.utils.translation import pgettext_lazy
 
 
 # Create your views here.
@@ -75,7 +75,7 @@ class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = pgettext('page title', 'Edit')
+        context['title'] = pgettext_lazy('page title', 'Edit')
         context['delete_view'] = reverse_lazy(f'{self.text}_delete', kwargs={'pk': self.object.pk})
         return context
 

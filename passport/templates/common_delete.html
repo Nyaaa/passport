@@ -9,7 +9,7 @@
 <form class="text-center" action="" method="post">
   {% csrf_token %}
   <p>{% blocktranslate %}Do you really want to delete "{{ object }}"?{% endblocktranslate %}</p>
-  <button type="submit" class="btn btn-danger">{% blocktranslate context "button" %}Delete{% endblocktranslate %}</button>
+  <button type="submit" class="btn btn-danger">{% trans "Delete" context "button" %}</button>
   <a href="{{ request.META.HTTP_REFERER|escape }}" class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
 <br>

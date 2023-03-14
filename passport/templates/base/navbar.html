@@ -19,7 +19,7 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" href="{% url 'item' %}">{% trans "Items" %}</a></li>
-            <li><a class="dropdown-item" href="{% url 'series' %}">{% trans "Series" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'series' %}">{% trans "Series" context "plural" %}</a></li>
             <li><a class="dropdown-item" href="{% url 'distributor' %}">{% trans "Distributors" %}</a></li>
             <li><a class="dropdown-item" href="{% url 'recipient' %}">{% trans "Recipients" %}</a></li>
             <li><a class="dropdown-item" href="{% url 'city' %}">{% trans "Cities" %}</a></li>

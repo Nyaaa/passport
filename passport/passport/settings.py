@@ -167,7 +167,7 @@ LOGOUT_REDIRECT_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('home')
 
 DATETIME_FORMAT = 'Y-m-d, H:i'
-SHORT_DATE_FORMAT = 'Y-m-d'
+SHORT_DATETIME_FORMAT = 'Y-m-d'
 
 INTERNAL_IPS = [
     "127.0.0.1",

@@ -1,6 +1,7 @@
 import django_tables2 as tables
 from .models import Set, Order
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 
 class MetaColumn(tables.Column):
@@ -60,11 +61,11 @@ def table_factory(_model):
 
 class SetTable(table_factory(Set)):
     view = MetaColumn()
-    date = tables.DateTimeColumn(accessor='date', format='SHORT_DATE_FORMAT')
-    distributor = tables.Column(accessor='distributor')
-    recipient = tables.Column(accessor='recipient')
-    city = tables.Column(accessor='city')
-    document = tables.Column(accessor='document')
+    date = tables.DateTimeColumn(accessor='date', short=True, verbose_name=_('Date'))
+    distributor = tables.Column(accessor='distributor', verbose_name=_('Distributor'))
+    recipient = tables.Column(accessor='recipient', verbose_name=_('Recipient'))
+    city = tables.Column(accessor='city', verbose_name=_('City'))
+    document = tables.Column(accessor='document', verbose_name=_('Document'))
 
     class Meta(BaseMeta):
         model = Set
@@ -72,7 +73,7 @@ class SetTable(table_factory(Set)):
 
 class OrderTable(table_factory(Order)):
     view = MetaColumn()
-    date = tables.DateTimeColumn(format='SHORT_DATE_FORMAT')
+    date = tables.DateTimeColumn(short=True)
     sets = tables.ManyToManyColumn()
 
     class Meta(BaseMeta):

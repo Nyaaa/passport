@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-13 14:26+0000\n"
-"PO-Revision-Date: 2023-03-13 17:26+0300\n"
+"POT-Creation-Date: 2023-03-14 14:13+0000\n"
+"PO-Revision-Date: 2023-03-14 13:02+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -28,44 +28,52 @@ msgstr "Все серии"
 msgid "All items"
 msgstr "Все материалы"
 
-#: main/filters.py:31 main/models.py:70 templates/set_detail.html:8
-#: templates/set_detail.html:21
+#: main/filters.py:31
+msgid "Item type"
+msgstr "Тип материала"
+
+#: main/filters.py:32 main/models.py:53 main/models.py:74
+#: templates/set_detail.html:8 templates/set_detail.html:21
 msgid "Set"
 msgstr "Набор"
 
-#: main/filters.py:31
+#: main/filters.py:32
 msgid "Tool"
 msgstr "Инструмент"
 
-#: main/filters.py:39
+#: main/filters.py:40
 msgid "Article contains"
 msgstr "Артикул содержит"
 
-#: main/filters.py:42 main/filters.py:63
+#: main/filters.py:43 main/filters.py:67
 msgid "All distributors"
 msgstr "Все дистрибьюторы"
 
-#: main/filters.py:43 main/models.py:84 templates/set_detail.html:37
+#: main/filters.py:43 main/models.py:88 main/models.py:133 main/tables.py:65
+#: templates/set_detail.html:37
 msgid "Distributor"
 msgstr "Дистрибьютор"
 
-#: main/filters.py:44 main/filters.py:65
+#: main/filters.py:46 main/filters.py:69
 msgid "All recipients"
 msgstr "Все получатели"
 
-#: main/filters.py:45 main/models.py:101 templates/set_detail.html:38
+#: main/filters.py:46 main/models.py:105 main/models.py:134 main/tables.py:66
+#: templates/set_detail.html:38
 msgid "Recipient"
 msgstr "Получатель"
 
-#: main/filters.py:46 main/filters.py:66
+#: main/filters.py:49 main/filters.py:70
 msgid "All cities"
 msgstr "Все города"
 
-#: main/filters.py:47 main/models.py:118 templates/set_detail.html:39
+#: main/filters.py:49 main/models.py:122 main/models.py:136 main/tables.py:67
+#: templates/set_detail.html:39
 msgid "City"
 msgstr "Город"
 
-#: main/filters.py:48 main/models.py:131 templates/set_detail.html:41
+#: main/filters.py:52 main/models.py:135 main/tables.py:68
+#: templates/set_detail.html:41
 msgid "Document"
 msgstr "Документ"
 
@@ -77,95 +85,95 @@ msgstr "Серийный номер должен соответствовать 
 msgid "A set with this serial number already exists."
 msgstr "Набор с этим серийным номером уже существует."
 
-#: main/models.py:13 main/models.py:35 main/models.py:78 main/models.py:95
-#: main/models.py:112 templates/set_detail.html:86
+#: main/models.py:13 main/models.py:35 main/models.py:82 main/models.py:99
+#: main/models.py:116 templates/set_detail.html:86
 msgid "Name"
 msgstr "Наименование"
 
-#: main/models.py:19
+#: main/models.py:19 main/models.py:37 templates/set_detail.html:23
 msgctxt "singular"
 msgid "Series"
 msgstr "Серия"
 
-#: main/models.py:20
+#: main/models.py:20 templates/base/navbar.html:22
 msgctxt "plural"
 msgid "Series"
 msgstr "Серии"
 
-#: main/models.py:34 templates/set_detail.html:85
+#: main/models.py:34 main/models.py:66 templates/set_detail.html:85
 msgid "Article"
 msgstr "Артикул"
 
-#: main/models.py:37
+#: main/models.py:38
 msgid "Is set"
 msgstr "Набор"
 
-#: main/models.py:38
+#: main/models.py:39
 msgid "Image"
 msgstr "Фото"
 
-#: main/models.py:44 templates/incomplete.html:19
+#: main/models.py:45 main/models.py:54 templates/incomplete.html:19
 msgid "Item"
 msgstr "Материал"
 
-#: main/models.py:45 templates/base/navbar.html:21
+#: main/models.py:46 main/models.py:67 templates/base/navbar.html:21
 msgid "Items"
 msgstr "Материалы"
 
-#: main/models.py:54 templates/incomplete.html:20 templates/set_detail.html:87
-msgid "Amount"
-msgstr "Количество"
-
-#: main/models.py:55
+#: main/models.py:56
 msgid "Quantity should be >= 0."
 msgstr "Количество должно быть >= 0."
 
-#: main/models.py:56
-msgid "Tray"
-msgstr "Сетка №"
+#: main/models.py:57 templates/incomplete.html:20 templates/set_detail.html:87
+msgid "Amount"
+msgstr "Количество"
 
-#: main/models.py:56
+#: main/models.py:58
 msgid "Select tray 0 for optional items."
 msgstr "Выберите лоток 0 для дополнительных позиций."
 
-#: main/models.py:57 main/models.py:64 main/models.py:134
+#: main/models.py:59
+msgid "Tray"
+msgstr "Сетка №"
+
+#: main/models.py:60 main/models.py:68 main/models.py:138
 #: templates/incomplete.html:21
 msgid "Comment"
 msgstr "Комментарий"
 
-#: main/models.py:61
+#: main/models.py:64
 msgid "Serial"
 msgstr "С/Н"
 
-#: main/models.py:71 templates/base/navbar.html:30
+#: main/models.py:75 main/models.py:137 templates/base/navbar.html:30
 msgid "Sets"
 msgstr "Наборы"
 
-#: main/models.py:85 templates/base/navbar.html:23
+#: main/models.py:89 templates/base/navbar.html:23
 msgid "Distributors"
 msgstr "Дистрибьюторы"
 
-#: main/models.py:89 main/models.py:106
+#: main/models.py:93 main/models.py:110
 msgid "This is a system object."
 msgstr "Это системный объект."
 
-#: main/models.py:102 templates/base/navbar.html:24
+#: main/models.py:106 templates/base/navbar.html:24
 msgid "Recipients"
 msgstr "Получатели"
 
-#: main/models.py:119 templates/base/navbar.html:25
+#: main/models.py:123 templates/base/navbar.html:25
 msgid "Cities"
 msgstr "Города"
 
-#: main/models.py:128 templates/set_detail.html:40
+#: main/models.py:132 main/tables.py:64 templates/set_detail.html:40
 msgid "Date"
 msgstr "Дата"
 
-#: main/models.py:140
+#: main/models.py:144
 msgid "Order"
 msgstr "Заказ"
 
-#: main/models.py:141 templates/base/navbar.html:34
+#: main/models.py:145 templates/base/navbar.html:34
 msgid "Orders"
 msgstr "Заказы"
 
@@ -212,10 +220,6 @@ msgstr "Статистика"
 msgid "Lists"
 msgstr "Списки"
 
-#: templates/base/navbar.html:22 templates/set_detail.html:23
-msgid "Series"
-msgstr "Серии"
-
 #: templates/base/navbar.html:38 templates/incomplete.html:6
 #: templates/incomplete.html:12
 msgid "Incomplete sets"
@@ -226,7 +230,7 @@ msgid "Sign out"
 msgstr "Выйти"
 
 #: templates/common_delete.html:4 templates/common_delete.html:7
-#: templates/common_edit.html:55
+#: templates/common_edit.html:57
 msgid "Delete"
 msgstr "Удаление"
 
@@ -240,9 +244,14 @@ msgctxt "button"
 msgid "Delete"
 msgstr "Удалить"
 
-#: templates/common_delete.html:13 templates/common_edit.html:53
+#: templates/common_delete.html:13 templates/common_edit.html:55
 msgid "Cancel"
 msgstr "Отмена"
+
+#: templates/common_edit.html:54
+msgctxt "button"
+msgid "Save"
+msgstr "Сохранить"
 
 #: templates/common_list.html:19
 msgctxt "total number of objects"
@@ -253,13 +262,22 @@ msgstr "Всего"
 msgid "Clear filters"
 msgstr "Сбросить фильтры"
 
-#: templates/common_list.html:29
+#: templates/common_list.html:30
+msgid "Filter"
+msgstr "Отфильтровать"
+
+#: templates/common_list.html:31
 msgid "Export"
 msgstr "Экспорт"
 
-#: templates/common_list.html:49
+#: templates/common_list.html:52
 msgid "New"
 msgstr "Новый"
+
+#: templates/common_list.html:64
+msgctxt "button"
+msgid "Create"
+msgstr "Создать"
 
 #: templates/home.html:28
 msgid "Sets by distributor"
@@ -320,6 +338,9 @@ msgstr "шт"
 #: templates/users/login.html:5 templates/users/login.html:10
 msgid "Sign in"
 msgstr "Войти"
+
+#~ msgid "Series"
+#~ msgstr "Серии"
 
 #, fuzzy
 #~| msgid "Items"
