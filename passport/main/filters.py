@@ -3,9 +3,11 @@ from .models import Item, Set, Series, Order, Distributor, Recipient, City
 from django import forms
 from ajax_select.fields import AutoCompleteWidget
 from django.utils.translation import gettext_lazy as _
+from typing import Type
+from django.db.models import Model
 
 
-def filter_factory(_model):
+def filter_factory(_model: Type[Model]):
     """
     Create universal filter for basic models
     Args:

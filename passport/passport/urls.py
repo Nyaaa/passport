@@ -22,10 +22,12 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls'), name='main'),
-    path('__debug__/', include('debug_toolbar.urls')),
     path('ajax_select/', include(ajax_select_urls)),
     path('i18n/', include('django.conf.urls.i18n')),
 ]
 
 if settings.DEBUG:
+    urlpatterns += [
+        path('__debug__/', include('debug_toolbar.urls')),
+    ]
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

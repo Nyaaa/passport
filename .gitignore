@@ -131,3 +131,4 @@ dmypy.json
 .idea/
 /passport/media/
 /passport/.coveralls.yml
+/passport/staticfiles/

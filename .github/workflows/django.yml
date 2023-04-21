@@ -29,6 +29,6 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
       run: |
         cd passport
-        poetry run coverage run manage.py test
+        poetry run coverage run manage.py test --settings=passport.test_settings
         poetry run coverage report
         poetry run coveralls

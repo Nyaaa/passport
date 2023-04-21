@@ -2,16 +2,28 @@ version: '3.5'
 
 services:
   postgres:
-    container_name: passport_postgres
+    container_name: 'passport_postgres'
     image: postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-passport}
     volumes:
        - postgres:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
     restart: unless-stopped
+
+  web:
+    build: .
+    restart: unless-stopped
+    container_name: 'passport_django'
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./passport/:/usr/src/app/
+    depends_on:
+      - postgres
 
 volumes:
     postgres:
