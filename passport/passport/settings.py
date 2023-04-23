@@ -30,6 +30,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'test')
 DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '127.0.0.1')]
+CSRF_TRUSTED_ORIGINS = [
+    os.getenv('DOMAIN', 'http://127.0.0.1')
+]
 
 
 # Application definition
