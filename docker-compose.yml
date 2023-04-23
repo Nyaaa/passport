@@ -20,6 +20,8 @@ services:
     container_name: 'passport_django'
     ports:
       - '8000:8000'
+    environment:
+      PORT: ${PORT:-8000}
     volumes:
       - ./passport/:/usr/src/app/
     depends_on:
