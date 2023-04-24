@@ -27,6 +27,19 @@ services:
     depends_on:
       - postgres
 
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile_dev
+    restart: unless-stopped
+    container_name: 'passport_django_dev'
+    ports:
+      - '8001:8001'
+    volumes:
+      - ./passport/:/usr/src/app/
+    depends_on:
+      - postgres
+
 volumes:
     postgres:
 

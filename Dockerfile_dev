@@ -1,0 +1,11 @@
+FROM python:3.11-alpine
+
+WORKDIR /usr/src/app
+
+RUN pip install poetry && poetry config virtualenvs.create false
+COPY poetry.lock pyproject.toml /usr/src/app/
+RUN poetry install -n --no-root --no-cache
+
+COPY passport /usr/src/app/
+
+CMD ["python", "manage.py", "runserver", "--settings=passport.dev_settings", "0.0.0.0:8001"]

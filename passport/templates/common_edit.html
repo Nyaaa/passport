@@ -54,11 +54,15 @@
         <button type="submit" class="btn btn-primary">{% trans "Save" context "button" %}</button>
         <a href="{{request.META.HTTP_REFERER|escape}}" class="btn btn-outline-primary">{% trans "Cancel" %}</a>
         {% if request.resolver_match.url_name != 'order_create' %}
-          <a href="{{ delete_view }}?{{ request.GET.urlencode }}" class="btn btn-outline-danger">{% trans "Delete" %}</a>
+          <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            {% trans "Delete" %}
+          </button>
         {% endif %}
       </div>
     </div>
   </form>
+{% include 'modal_delete.html' %}
+
 {% endif %}
 {% endblock content %}
 
