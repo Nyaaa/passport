@@ -1,8 +1,9 @@
-from django.test import TestCase
-from main.urls import urlpatterns
-from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import reverse
 from model_bakery import baker
+
+from main.urls import urlpatterns
 
 
 def get_url(page):
@@ -10,8 +11,7 @@ def get_url(page):
     if ':pk>' in str(page.pattern):
         obj = baker.make(page.name.split('_')[0])
         return reverse(page.name, kwargs={'pk': obj.pk})
-    else:
-        return reverse(page.name)
+    return reverse(page.name)
 
 
 class UrlTests(TestCase):
@@ -22,11 +22,7 @@ class UrlTests(TestCase):
 
             if page.name == 'login':
                 continue
-            elif page.name == 'logout':
-                expected_url = '/login/'
-            else:
-                expected_url = '/login/?next=' + url
-
+            expected_url = '/login/' if page.name == 'logout' else '/login/?next=' + url
             self.assertRedirects(self.client.get(url), expected_url, status_code=302, target_status_code=200,
                                  fetch_redirect_response=True)
 

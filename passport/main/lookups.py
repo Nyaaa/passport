@@ -1,5 +1,6 @@
 """Lookup channels for ajax-autocomplete"""
-from ajax_select import register, LookupChannel
+from ajax_select import LookupChannel, register
+
 from .models import City, Item, Set
 
 

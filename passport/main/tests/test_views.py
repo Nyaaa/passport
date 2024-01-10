@@ -1,9 +1,10 @@
-from django.test import TestCase, RequestFactory
-from model_bakery import baker
-from main.views import CommonUpdateView, CommonDeleteView, CommonListView
-from main.models import Recipient, Item, Set, Order
-from django.urls import reverse, resolve
 from django.contrib.auth import get_user_model
+from django.test import RequestFactory, TestCase
+from django.urls import resolve, reverse
+from model_bakery import baker
+
+from main.models import Item, Order, Recipient, Set
+from main.views import CommonDeleteView, CommonListView, CommonUpdateView
 
 
 class ViewTests(TestCase):

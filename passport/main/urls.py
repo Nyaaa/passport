@@ -1,8 +1,9 @@
-from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from .views import CommonDeleteView, CommonListView, CommonUpdateView
-from .models import Item, Series, Distributor, Recipient, Set, Order, City
+from django.urls import path
+
 from . import views as v
+from .models import City, Distributor, Item, Order, Recipient, Series, Set
+from .views import CommonDeleteView, CommonListView, CommonUpdateView
 
 urlpatterns = [
     path('', v.HomeView.as_view(), name='home'),

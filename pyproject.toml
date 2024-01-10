@@ -42,3 +42,14 @@ omit = ['*/tests/*', '*/migrations/*', 'passport/*']
 
 [tool.coverage.report]
 skip_covered = true
+
+[tool.ruff]
+line-length = 119
+exclude = ['*/migrations/*']
+select = ['E', 'F', 'UP', 'NPY', 'SIM', 'ICN', 'C4', 'A', 'B', 'N', 'I', 'Q', 'DJ',
+    'W', 'PL', 'RET', 'RUF', 'PERF', 'PIE', 'ARG', 'PTH', 'PD', 'PGH', 'TRY']
+ignore = ['TRY003', 'ARG002', 'RUF012']
+
+[tool.ruff.flake8-quotes]
+inline-quotes = 'single'
+multiline-quotes = 'double'

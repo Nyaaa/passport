@@ -1,24 +1,25 @@
-from django.views.generic import UpdateView, DeleteView, TemplateView,\
-    DetailView, FormView, ListView, CreateView
-from .models import Item, Set, SetItem, Order
-from .tables import SetTable, table_factory, OrderTable
-from .filters import ItemFilter, SetFilter, filter_factory, OrderFilter
-from .forms import SetForm, SetBasicForm, modelform_init, OrderForm, set_item_formset, OrderBasicForm
-from django_filters.views import FilterView
-from django_tables2.views import SingleTableMixin
-from django_tables2.export.views import ExportMixin
-from django_tables2 import RequestConfig
+from collections import defaultdict
+
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Count, OuterRef, ProtectedError, RestrictedError, Subquery
+from django.db.models.functions import TruncYear
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from collections import defaultdict
-from django.db.models import OuterRef, Subquery, Count, ProtectedError, RestrictedError
-from django.db.models.functions import TruncYear
 from django.utils import timezone
-from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
+from django_filters.views import FilterView
+from django_tables2 import RequestConfig
+from django_tables2.export.views import ExportMixin
+from django_tables2.views import SingleTableMixin
+
+from .filters import ItemFilter, OrderFilter, SetFilter, filter_factory
+from .forms import OrderBasicForm, OrderForm, SetBasicForm, SetForm, modelform_init, set_item_formset
+from .models import Item, Order, Set, SetItem
+from .tables import OrderTable, SetTable, table_factory
 
 
 # Create your views here.
@@ -29,7 +30,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         """Data prep for displaying charts"""
         context = super().get_context_data(**kwargs)
-        date_limit = timezone.now() - timezone.timedelta(days=5*365)
+        date_limit = timezone.now() - timezone.timedelta(days=5 * 365)
         qs = Set.objects.all()
         latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
         qs = qs.prefetch_related('order_set').annotate(
@@ -37,33 +38,33 @@ class HomeView(LoginRequiredMixin, TemplateView):
             date=Subquery(latest_order.values('date')),
         )
 
-        context['distributor_sets_chart'] = qs.values('distributor').order_by('distributor')\
-            .annotate(count=Count('serial')).values('distributor', 'count')
+        context['distributor_sets_chart'] = (qs.values('distributor').order_by('distributor')
+                                             .annotate(count=Count('serial')).values('distributor', 'count'))
 
-        context['shipments'] = Order.objects.exclude(distributor__pk=1)\
-            .annotate(year=TruncYear('date')).values('year')\
-            .annotate(Count('date', distinct=True), Count('sets'))\
-            .values('year', 'date__count', 'sets__count').filter(year__gt=date_limit)
+        context['shipments'] = (Order.objects.exclude(distributor__pk=1)
+                                .annotate(year=TruncYear('date')).values('year')
+                                .annotate(Count('date', distinct=True), Count('sets'))
+                                .values('year', 'date__count', 'sets__count').filter(year__gt=date_limit))
 
-        context['returns'] = Order.objects.filter(distributor__pk=1)\
-            .annotate(year=TruncYear('date')).values('year')\
-            .annotate(Count('date', distinct=True), Count('sets'))\
-            .values('year', 'date__count', 'sets__count').filter(year__gt=date_limit)
+        context['returns'] = (Order.objects.filter(distributor__pk=1)
+                              .annotate(year=TruncYear('date')).values('year')
+                              .annotate(Count('date', distinct=True), Count('sets'))
+                              .values('year', 'date__count', 'sets__count').filter(year__gt=date_limit))
 
         return context
 
 
 class CommonUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     """Universal UpdateView for all basic models"""
-    template_name = "common_edit.html"
+    template_name = 'common_edit.html'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         Gets model from urls.py
         Args:
             **kwargs (): model: Django model
         """
-        super(CommonUpdateView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.form_class = modelform_init(self.model)
         self.text = self.model.__name__.lower()
 
@@ -86,13 +87,13 @@ class CommonListView(SuccessMessageMixin, LoginRequiredMixin, ExportMixin, Singl
     paginate_by = 20
     ordering = 'name'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         Gets model from urls.py
         Args:
             **kwargs (): model: Django model
         """
-        super(CommonListView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.text = self.model.__name__.lower()
         self.form_class = modelform_init(self.model)
         self.table_class = table_factory(self.model)
@@ -103,7 +104,7 @@ class CommonListView(SuccessMessageMixin, LoginRequiredMixin, ExportMixin, Singl
     def form_valid(self, form):
         """Creates new objects in lieu of CreateView"""
         self.object = form.save()
-        return super(CommonListView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return f'{reverse_lazy(self.text)}?{self.request.GET.urlencode()}'
@@ -135,7 +136,7 @@ class CommonDeleteView(LoginRequiredMixin, DeleteView):
     def form_valid(self, *args, **kwargs):
         obj = self.get_object()
         try:
-            super(CommonDeleteView, self).delete(*args, **kwargs)
+            super().delete(*args, **kwargs)
             messages.success(self.request, _('%s deleted successfully') % obj)
         except (ProtectedError, RestrictedError) as e:
             messages.error(self.request, e.args[0])
@@ -146,15 +147,13 @@ class ItemListView(CommonListView):
     model = Item
     ordering = 'article'
 
-    def __init__(self, *args, **kwargs):
-        super(ItemListView, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.filterset_class = ItemFilter
         self.form_class = modelform_init(Item, ['article', 'name'])
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.select_related('series')
-        return qs
+        return super().get_queryset().select_related('series')
 
     def get_success_url(self):
         return f'{self.object.get_absolute_url()}?{self.request.GET.urlencode()}'
@@ -164,8 +163,8 @@ class SetListView(CommonListView):
     model = Set
     ordering = 'serial'
 
-    def __init__(self, *args, **kwargs):
-        super(SetListView, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.filterset_class = SetFilter
         self.table_class = SetTable
         self.form_class = SetBasicForm
@@ -199,12 +198,11 @@ class SetListView(CommonListView):
         qs = super().get_queryset()
         qs = qs.select_related('article')
         latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
-        qs = qs.prefetch_related('order_set').annotate(recipient=Subquery(latest_order.values('recipient__name')),
-                                                       distributor=Subquery(latest_order.values('distributor__name')),
-                                                       city=Subquery(latest_order.values('city__name')),
-                                                       date=Subquery(latest_order.values('date')),
-                                                       document=Subquery(latest_order.values('document')))
-        return qs
+        return qs.prefetch_related('order_set').annotate(recipient=Subquery(latest_order.values('recipient__name')),
+                                                         distributor=Subquery(latest_order.values('distributor__name')),
+                                                         city=Subquery(latest_order.values('city__name')),
+                                                         date=Subquery(latest_order.values('date')),
+                                                         document=Subquery(latest_order.values('document')))
 
 
 class SetDetailView(LoginRequiredMixin, DetailView):
@@ -228,8 +226,8 @@ class SetUpdateView(CommonUpdateView):
     model = Set
     template_name = 'common_edit.html'
 
-    def __init__(self, *args, **kwargs):
-        super(SetUpdateView, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.form_class = SetForm
 
     def get_context_data(self, **kwargs):
@@ -256,18 +254,15 @@ class OrderListView(CommonListView):
     model = Order
     ordering = '-date'
 
-    def __init__(self, *args, **kwargs):
-        super(OrderListView, self).__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.filterset_class = OrderFilter
         self.object_list = self.model.objects.all()
         self.table_class = OrderTable
         self.form_class = OrderBasicForm
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.select_related('distributor', 'recipient', 'city')
-        qs = qs.prefetch_related('sets')
-        return qs
+        return super().get_queryset().select_related('distributor', 'recipient', 'city').prefetch_related('sets')
 
     def form_valid(self, form):
         return redirect(reverse_lazy('order_create'))
@@ -298,7 +293,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         obj = self.get_object()
         context['sets'] = obj.sets.all().select_related().prefetch_related()
-        sets_items = dict()
+        sets_items = {}
         for i in context['sets']:
             _dict = defaultdict(list)
             items = SetItem.objects.filter(set=i).select_related('item')
@@ -313,7 +308,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 class OrderUpdateView(CommonUpdateView):
     model = Order
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.form_class = OrderForm
         self.text = self.model.__name__.lower()
@@ -332,6 +327,4 @@ class IncompleteSetView(LoginRequiredMixin, ListView):
         latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
         sets = qs.prefetch_related('order_set').annotate(
             recipient=Subquery(latest_order.values('recipient__pk'))).filter(recipient=1)
-        qs = SetItem.objects.select_related().filter(set__in=sets).values('item', 'amount', 'comment', 'set')
-
-        return qs
+        return SetItem.objects.select_related().filter(set__in=sets).values('item', 'amount', 'comment', 'set')

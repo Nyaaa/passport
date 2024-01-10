@@ -1,10 +1,12 @@
-from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ChoiceFilter, DateFilter, NumberFilter
-from .models import Item, Set, Series, Order, Distributor, Recipient, City
-from django import forms
-from ajax_select.fields import AutoCompleteWidget
-from django.utils.translation import gettext_lazy as _
 from typing import Type
+
+from ajax_select.fields import AutoCompleteWidget
+from django import forms
 from django.db.models import Model
+from django.utils.translation import gettext_lazy as _
+from django_filters import CharFilter, ChoiceFilter, DateFilter, FilterSet, ModelChoiceFilter, NumberFilter
+
+from .models import City, Distributor, Item, Order, Recipient, Series, Set
 
 
 def filter_factory(_model: Type[Model]):

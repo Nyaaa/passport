@@ -1,7 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from model_bakery import baker
-from main.models import Set, Order
-from django.contrib.auth import get_user_model
+
+from main.models import Order, Set
 
 
 class AdminTests(TestCase):

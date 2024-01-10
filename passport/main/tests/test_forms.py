@@ -1,7 +1,8 @@
 from django.test import TestCase
-from main.forms import SetForm, modelform_init
-from main.models import Item, City, Set
 from model_bakery import baker
+
+from main.forms import SetForm, modelform_init
+from main.models import City, Item, Set
 
 
 class FormTests(TestCase):

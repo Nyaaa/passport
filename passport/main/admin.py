@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Item, Series, Distributor, Recipient, City, Set, Order
 from django.db.models import OuterRef, Subquery
+
+from .models import City, Distributor, Item, Order, Recipient, Series, Set
 
 
 # Register your models here.
@@ -19,12 +20,11 @@ class SetAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         qs = qs.select_related('article')
         latest_order = Order.objects.filter(sets=OuterRef('pk')).order_by('-date')[:1]
-        qs = qs.prefetch_related('order_set').annotate(recipient=Subquery(latest_order.values('recipient__name')),
+        return qs.prefetch_related('order_set').annotate(recipient=Subquery(latest_order.values('recipient__name')),
                                                        distributor=Subquery(latest_order.values('distributor__name')),
                                                        city=Subquery(latest_order.values('city__name')),
                                                        date=Subquery(latest_order.values('date')),
                                                        document=Subquery(latest_order.values('document')))
-        return qs
 
     def recipient(self, obj):
         return obj.recipient

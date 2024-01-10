@@ -1,8 +1,9 @@
-from django.test import TestCase
-from main.models import Distributor, Recipient, ProtectedError, City, \
-    Order, Series, Item, Set, item_img_path
-from uuid import UUID
 import re
+from uuid import UUID
+
+from django.test import TestCase
+
+from main.models import City, Distributor, Item, Order, ProtectedError, Recipient, Series, Set, item_img_path
 
 
 class ModelTests(TestCase):

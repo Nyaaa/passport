@@ -1,7 +1,8 @@
 from django.test import TestCase
+from django.test.client import RequestFactory
+
 from main.models import City
 from main.tables import table_factory
-from django.test.client import RequestFactory
 
 
 class TableTests(TestCase):

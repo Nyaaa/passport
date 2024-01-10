@@ -1,14 +1,15 @@
 import random
+
 from django.core.management.base import BaseCommand
-from main.models import Item, Distributor, Recipient, Order, City, Set, Series, SetItem
-from faker import Faker
 from django.utils import timezone
+from faker import Faker
+from main.models import City, Distributor, Item, Order, Recipient, Series, Set, SetItem
 
 fake = Faker()
 
 
 class Command(BaseCommand):
-    help = 'Populates the database with random generated data.'
+    help = 'Populates the database with random generated data.'  # noqa: A003
 
     def add_arguments(self, parser):
         parser.add_argument('--items', type=int, help='The amount of item articles to create.')
@@ -23,8 +24,8 @@ class Command(BaseCommand):
         Distributor.objects.bulk_create([Distributor(name=fake.company()) for _ in range(20)], ignore_conflicts=True)
         Recipient.objects.bulk_create([Recipient(name=fake.company()) for _ in range(20)], ignore_conflicts=True)
         Series.objects.bulk_create([Series(name=fake.safe_color_name()) for _ in range(20)], ignore_conflicts=True)
-        Item.objects.bulk_create(self.gen_items(items, True), ignore_conflicts=True)
-        Item.objects.bulk_create(self.gen_items(items, False), ignore_conflicts=True)
+        Item.objects.bulk_create(self.gen_items(items, is_set=True), ignore_conflicts=True)
+        Item.objects.bulk_create(self.gen_items(items, is_set=False), ignore_conflicts=True)
         Order.objects.bulk_create(self.gen_orders(orders))
 
         for i in Item.objects.filter(is_set=True):
@@ -51,13 +52,11 @@ class Command(BaseCommand):
     @staticmethod
     def gen_items(items, is_set: bool) -> list[Item]:
         amount = 50 if is_set else items - 50
-        bulk_list = []
-        for _ in range(amount):
-            bulk_list.append(Item(name=fake.text(max_nb_chars=20),
-                                  article=fake.bothify(text='??###?', letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'),
-                                  series=random.choice(Series.objects.all()),
-                                  is_set=is_set))
-        return bulk_list
+        return [Item(name=fake.text(max_nb_chars=20),
+                     article=fake.bothify(text='??###?', letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'),
+                     series=random.choice(Series.objects.all()),
+                     is_set=is_set)
+                for _ in range(amount)]
 
     @staticmethod
     def gen_orders(orders) -> list[Order]:

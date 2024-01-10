@@ -1,11 +1,12 @@
 import django_tables2 as tables
-from .models import Set, Order
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from .models import Order, Set
+
 
 class MetaColumn(tables.Column):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.orderable = False
         self.exclude_from_export = True
@@ -34,13 +35,13 @@ def table_factory(_model):
         view = MetaColumn()
         edit = MetaColumn()
 
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args, **kwargs) -> None:
             """
             Get request from CommonListView to make urls with query string
             Args:
                 **kwargs (): request
             """
-            self.request = kwargs.pop("request")
+            self.request = kwargs.pop('request')
             super().__init__(*args, **kwargs)
             self.q_str = self.request.GET.urlencode()
 

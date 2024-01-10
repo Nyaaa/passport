@@ -1,8 +1,9 @@
 from django.test import TestCase
-from main.templatetags.custom_filters import get_values
+
 from main.filters import SetFilter, filter_factory
-from main.models import City, Item, Set
 from main.lookups import CityLookup, ItemLookup, SetLookup
+from main.models import City, Item, Set
+from main.templatetags.custom_filters import get_values
 
 
 class TemplateTagsTests(TestCase):

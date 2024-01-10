@@ -1,8 +1,11 @@
+import re
+
+from ajax_select.fields import AutoCompleteSelectMultipleWidget, AutoCompleteSelectWidget, AutoCompleteWidget
 from django import forms
-from .models import Item, Set, Order, SetItem
 from django.core.exceptions import ValidationError
-from ajax_select.fields import AutoCompleteWidget, AutoCompleteSelectWidget, AutoCompleteSelectMultipleWidget
 from django.utils.translation import gettext_lazy as _
+
+from .models import Item, Order, Set, SetItem
 
 set_item_formset = forms.inlineformset_factory(
     Set,
@@ -51,19 +54,15 @@ class SetForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         cleaned_data['serial'] = ''.join(cleaned_data['serial'].split()).upper()
-        try:
-            split = cleaned_data.get('serial').rsplit('-')
-            int(split[1])
-            if split[0] != str(cleaned_data['article']):
-                raise ValueError
-        except (ValueError, IndexError):
+        valid_serial = re.findall(rf"^{cleaned_data['article']}-\d+$", cleaned_data['serial'])
+        if not valid_serial:
             raise ValidationError({
-                "serial": _("Serial number must follow the pattern [article]-[digits].")
+                'serial': _('Serial number must follow the pattern [article]-[digits].')
             })
         find_serial = Set.objects.filter(serial=cleaned_data['serial'])
         if find_serial and cleaned_data['serial'] != self.instance.serial:
             raise ValidationError({
-                "serial": _("A set with this serial number already exists.")
+                'serial': _('A set with this serial number already exists.')
             })
         return cleaned_data
 
@@ -89,4 +88,4 @@ class OrderForm(forms.ModelForm):
 class OrderBasicForm(forms.ModelForm):
     class Meta:
         model = Order
-        exclude = ['distributor', 'recipient', 'city', 'sets', 'date', 'comment', 'document']
+        fields = []
