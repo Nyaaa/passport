@@ -54,7 +54,8 @@ class SetForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         cleaned_data['serial'] = ''.join(cleaned_data['serial'].split()).upper()
-        valid_serial = re.findall(rf"^{cleaned_data['article']}-\d+$", cleaned_data['serial'])
+        article = re.escape(cleaned_data['article'].article)
+        valid_serial = re.findall(rf'^{article}-\d+$', cleaned_data['serial'])
         if not valid_serial:
             raise ValidationError({
                 'serial': _('Serial number must follow the pattern [article]-[digits].')
