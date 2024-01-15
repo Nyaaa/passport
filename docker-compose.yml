@@ -22,6 +22,7 @@ services:
       - '8000:8000'
     environment:
       PORT: ${PORT:-8000}
+      SECRET_KEY: ${SECRET_KEY:-test_key}
     volumes:
       - ./passport/:/usr/src/app/
     depends_on:
