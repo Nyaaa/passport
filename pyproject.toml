@@ -21,6 +21,7 @@ psycopg2-binary = "^2.9.5"
 whitenoise = "^6.4.0"
 uvicorn = "^0.22.0"
 django-cors-headers = "^4.1.0"
+django-elasticsearch-dsl = "^8.0"
 
 [tool.poetry.group.dev.dependencies]
 django-debug-toolbar = "^3.8.1"

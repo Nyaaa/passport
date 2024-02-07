@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'cachalot',
     'corsheaders',
+    'django_elasticsearch_dsl',
 ]
 
 MIDDLEWARE = [
@@ -178,3 +179,9 @@ CACHES = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': ['http://elastic:9200'],
+    },
+}

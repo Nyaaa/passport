@@ -14,6 +14,15 @@ services:
       - "${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}"
     restart: unless-stopped
 
+  elastic:
+    container_name: 'passport_elastic'
+    image: elasticsearch:8.12.1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - elk:/usr/share/elasticsearch/data
+
   web:
     build: .
     restart: unless-stopped
@@ -43,5 +52,4 @@ services:
 
 volumes:
     postgres:
-
-# pgadmin host: host.docker.internal
+    elk:
